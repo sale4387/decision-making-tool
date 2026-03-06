@@ -14,11 +14,22 @@ completion = client.chat.completions.create(
     messages=[
         {
             "role": "user",
-            "content": "I am looking to change my career focus and improve my skillset. I also want to be able to adjust my cv so i can apply for jobs which mean working with AI. While AI is still a thing i want to try to get on it ahead the curve. I passed promts course and some basic python and i managed to build some simple API which showed me city name and temperature based on coordinates only. It actually combined two apis. In order to get familiar with it i want to build my own tool. I often use chatgpt to collect info and to get help by choosing between alternatives. i often dont know much around the topic so i started broadly give a lot of context so it is good to have a tool which will 1st summiraze my thoughts and help me get to next steps such as defining budgets and picking alternatives"
+            "content": "Return your reply in valid JSON format only with following keys: goal(string), constraints (array of strings), options (array of strings), pros_cons (object which should list options which are also object. under each option we have two arrays pros[] and cons[]. under each of those two array we should have 3-5 elements), next_steps (array of strings). Now here is the input: My friend Misha is thinking about moving to Amsterdam but he is not sure that is a good moment. He is from Smederevo and he likes to visit his family on weekends, hang out with his friends and visit Menza AKA Butik 3 restaurant. His main concern is that living costs are higher in NL than in RS and standard of living will mostly deopend on him finding a job. he really needs some guidence on what to do what things should he compare and pros and cons but he cant organize his thoughts and he doesnt know which next step to take"
         }
     ],
 )
 
-#print(completion.choices[0].message.content)
+raw = completion.choices[0].message.content.strip()
 
-print(completion.__dict__.keys())
+start = raw.find("{")
+end = raw.rfind("}")
+
+if start == -1 or end == -1:
+    raise ValueError("No JSON object found in model output")
+
+raw_json = raw[start:end+1]
+data = json.loads(raw_json)
+
+
+
+
