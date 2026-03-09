@@ -2,12 +2,6 @@
 
 ## Backlog
 
-TASK-002 – Prompt templates and versioning
-Create reusable prompt templates and track prompt versions.
-
-TASK-003 – Logging and metrics
-Log model calls, latency, and possible token usage.
-
 TASK-004 – Automatic retry and fallback routing
 Retry when model output is invalid and optionally switch models.
 
@@ -38,6 +32,42 @@ Make the tool installable and runnable easily.
 ---
 
 ## In Progress
+
+TASK-003 – Logging and basic metrics
+
+Goal
+Track what happens when the program runs so we can debug and understand model behavior.
+
+Problem
+Right now if something fails (model error, parsing error, slow response) we only see prints in the terminal.
+Real systems record events so they can be analyzed later.
+
+Acceptance Criteria
+
+- Program logs when a model request starts
+- Program logs when a response is received
+- Program logs parsing errors
+- Logs include timestamps
+- Logs are written to a file
+
+Learning Objective
+Understand basic observability patterns used in AI systems.
+
+Subtasks
+
+[ ] Subtask 1 – Introduce logging module
+Replace basic print statements with Python logging.
+
+[ ] Subtask 2 – Log model request and response timing
+Measure how long the model call takes.
+
+[ ] Subtask 3 – Log JSON parsing failures
+Record errors when JSON decoding fails.
+
+References
+
+Python logging documentation
+https://docs.python.org/3/library/logging.html
 
 ---
 
@@ -82,5 +112,44 @@ Reference
 
 Python JSON documentation
 https://docs.python.org/3/library/json.html
+
+---
+
+TASK-002 – Prompt templates and versioning
+
+Goal
+Separate prompt logic from application code so prompts can be reused and modified independently.
+
+Problem
+The prompt is currently hard-coded inside `main.py`, making it difficult to maintain, compare versions, or reuse prompts.
+
+Acceptance Criteria
+
+- Prompt text is not written inline in the API call.
+- Prompt is stored in a reusable variable or template.
+- `main.py` loads the prompt from a single location.
+- Updating the prompt requires editing only one place.
+
+Learning Objective
+
+- Understand prompt templating
+- Understand prompt reuse patterns in LLM systems
+- Learn maintainable prompt design
+
+Subtasks
+
+[x] Subtask 1 – Move prompt to variable
+Move the long prompt text into a single variable instead of embedding it inside the API call.
+
+[x] Subtask 2 – Create prompt template
+Convert the prompt into a reusable template that accepts dynamic user input.
+
+References
+
+Python multiline strings
+https://docs.python.org/3/tutorial/introduction.html#strings
+
+Python string formatting
+https://docs.python.org/3/library/string.html#formatstrings
 
 ---
