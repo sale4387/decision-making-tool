@@ -33,41 +33,49 @@ Make the tool installable and runnable easily.
 
 ## In Progress
 
-TASK-003 – Logging and basic metrics
+TASK-004 – Automatic retry for invalid model output
 
 Goal
-Track what happens when the program runs so we can debug and understand model behavior.
+Make the system automatically retry the model call when the output cannot be parsed as valid JSON.
 
 Problem
-Right now if something fails (model error, parsing error, slow response) we only see prints in the terminal.
-Real systems record events so they can be analyzed later.
+LLMs sometimes return malformed JSON or ignore formatting instructions.  
+Currently the program fails after one attempt.
 
 Acceptance Criteria
 
-- Program logs when a model request starts
-- Program logs when a response is received
-- Program logs parsing errors
-- Logs include timestamps
-- Logs are written to a file
+- Program retries the model request when JSON parsing fails
+- Retry is limited (e.g., max 2–3 attempts)
+- Each retry is logged
+- If all retries fail, the program logs a final error and exits cleanly
 
 Learning Objective
-Understand basic observability patterns used in AI systems.
+
+- Understand reliability patterns used in AI systems
+- Implement retry logic
+- Separate model calling from parsing logic
 
 Subtasks
 
-[ ] Subtask 1 – Introduce logging module
-Replace basic print statements with Python logging.
+[x] Subtask 1 – Extract model call into a function  
+Create a function that performs the model request and returns the raw response.
 
-[ ] Subtask 2 – Log model request and response timing
-Measure how long the model call takes.
+[x] Subtask 2 – Implement retry loop  
+Add a loop that retries the request if parsing fails.
 
-[ ] Subtask 3 – Log JSON parsing failures
-Record errors when JSON decoding fails.
+[x] Subtask 3 – Add retry logging  
+Log attempt number and failure reason.
+
+[ ] Subtask 4 – Add retry limit  
+Stop retrying after a fixed number of attempts.
 
 References
 
-Python logging documentation
-https://docs.python.org/3/library/logging.html
+Python while loops  
+https://docs.python.org/3/tutorial/controlflow.html#while-statements
+
+Python functions  
+https://docs.python.org/3/tutorial/controlflow.html#defining-functions
 
 ---
 
@@ -151,5 +159,43 @@ https://docs.python.org/3/tutorial/introduction.html#strings
 
 Python string formatting
 https://docs.python.org/3/library/string.html#formatstrings
+
+---
+
+TASK-003 – Logging and basic metrics
+
+Goal
+Track what happens when the program runs so we can debug and understand model behavior.
+
+Problem
+Right now if something fails (model error, parsing error, slow response) we only see prints in the terminal.
+Real systems record events so they can be analyzed later.
+
+Acceptance Criteria
+
+- Program logs when a model request starts
+- Program logs when a response is received
+- Program logs parsing errors
+- Logs include timestamps
+- Logs are written to a file
+
+Learning Objective
+Understand basic observability patterns used in AI systems.
+
+Subtasks
+
+[x] Subtask 1 – Introduce logging module
+Replace basic print statements with Python logging.
+
+[x] Subtask 2 – Log model request and response timing
+Measure how long the model call takes.
+
+[x] Subtask 3 – Log JSON parsing failures
+Record errors when JSON decoding fails.
+
+References
+
+Python logging documentation
+https://docs.python.org/3/library/logging.html
 
 ---
