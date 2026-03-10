@@ -31,23 +31,24 @@ Create a small testing script that runs several predefined prompts through the t
 
 Subtasks:
 
-005-1 Create test prompt dataset
+[x] 005-1 Create test prompt dataset
 Create a Python list with 5–10 different decision problems (career change, relocation, budgeting, job offers, business idea, etc.).
 
-005-2 Run prompts automatically
+[x] 005-2 Run prompts automatically
 Replace user input with a loop that sends each test prompt to the model and collects responses.
 
-005-3 Validate required JSON keys
+[x] 005-3 Validate required JSON keys
 Check that every response contains:
 goal
 constraints
 options
 pros_cons
 next_steps
+cheer
 
 Log an error if any key is missing.
 
-005-4 Track pass / fail results
+[] 005-4 Track pass / fail results
 Log result for each test case.
 Example:
 Test 1 — PASS
