@@ -2,12 +2,6 @@
 
 ## Backlog
 
-TASK-004 – Automatic retry and fallback routing
-Retry when model output is invalid and optionally switch models.
-
-TASK-005 – Evaluation harness
-Create fixed test inputs to evaluate model output quality.
-
 TASK-006 – CLI UX improvements
 Improve terminal display and add modes such as `plan`, `summarize`, and `rage`.
 
@@ -27,55 +21,57 @@ Make the tool installable and runnable easily.
 
 ## This Sprint
 
-(No tasks currently waiting)
+TASK-005 — Evaluation Harness (basic LLM testing)
+
+Goal:
+Verify the tool consistently produces valid JSON and correct structure for different inputs.
+
+Description:
+Create a small testing script that runs several predefined prompts through the tool automatically and validates that the output JSON contains required keys. This prevents prompt or model changes from silently breaking the system.
+
+Subtasks:
+
+005-1 Create test prompt dataset
+Create a Python list with 5–10 different decision problems (career change, relocation, budgeting, job offers, business idea, etc.).
+
+005-2 Run prompts automatically
+Replace user input with a loop that sends each test prompt to the model and collects responses.
+
+005-3 Validate required JSON keys
+Check that every response contains:
+goal
+constraints
+options
+pros_cons
+next_steps
+
+Log an error if any key is missing.
+
+005-4 Track pass / fail results
+Log result for each test case.
+Example:
+Test 1 — PASS
+Test 2 — FAIL
+
+At the end print a summary:
+Total tests
+Passed
+Failed
+
+005-5 Save evaluation results
+Write evaluation results to a log file (for example: eval_results.log).
+
+Definition of Done:
+
+• Script runs multiple prompts automatically
+• JSON parsing still works
+• Required keys are validated
+• Pass/fail summary printed
+• Results logged to file
 
 ---
 
 ## In Progress
-
-TASK-004 – Automatic retry for invalid model output
-
-Goal
-Make the system automatically retry the model call when the output cannot be parsed as valid JSON.
-
-Problem
-LLMs sometimes return malformed JSON or ignore formatting instructions.  
-Currently the program fails after one attempt.
-
-Acceptance Criteria
-
-- Program retries the model request when JSON parsing fails
-- Retry is limited (e.g., max 2–3 attempts)
-- Each retry is logged
-- If all retries fail, the program logs a final error and exits cleanly
-
-Learning Objective
-
-- Understand reliability patterns used in AI systems
-- Implement retry logic
-- Separate model calling from parsing logic
-
-Subtasks
-
-[x] Subtask 1 – Extract model call into a function  
-Create a function that performs the model request and returns the raw response.
-
-[x] Subtask 2 – Implement retry loop  
-Add a loop that retries the request if parsing fails.
-
-[x] Subtask 3 – Add retry logging  
-Log attempt number and failure reason.
-
-[ ] Subtask 4 – Add retry limit  
-Stop retrying after a fixed number of attempts.
-
-References
-
-Python while loops  
-https://docs.python.org/3/tutorial/controlflow.html#while-statements
-
-Python functions  
-https://docs.python.org/3/tutorial/controlflow.html#defining-functions
 
 ---
 
@@ -197,5 +193,51 @@ References
 
 Python logging documentation
 https://docs.python.org/3/library/logging.html
+
+---
+
+TASK-004 – Automatic retry for invalid model output
+
+Goal
+Make the system automatically retry the model call when the output cannot be parsed as valid JSON.
+
+Problem
+LLMs sometimes return malformed JSON or ignore formatting instructions.  
+Currently the program fails after one attempt.
+
+Acceptance Criteria
+
+- Program retries the model request when JSON parsing fails
+- Retry is limited (e.g., max 2–3 attempts)
+- Each retry is logged
+- If all retries fail, the program logs a final error and exits cleanly
+
+Learning Objective
+
+- Understand reliability patterns used in AI systems
+- Implement retry logic
+- Separate model calling from parsing logic
+
+Subtasks
+
+[x] Subtask 1 – Extract model call into a function  
+Create a function that performs the model request and returns the raw response.
+
+[x] Subtask 2 – Implement retry loop  
+Add a loop that retries the request if parsing fails.
+
+[x] Subtask 3 – Add retry logging  
+Log attempt number and failure reason.
+
+[x] Subtask 4 – Add retry limit  
+Stop retrying after a fixed number of attempts.
+
+References
+
+Python while loops  
+https://docs.python.org/3/tutorial/controlflow.html#while-statements
+
+Python functions  
+https://docs.python.org/3/tutorial/controlflow.html#defining-functions
 
 ---

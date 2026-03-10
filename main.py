@@ -16,8 +16,7 @@ client = InferenceClient(
     api_key=os.getenv("HF_TOKEN"),
 )
 user_input = input("Describe your problem: ")
-prompt=f"""Return your reply in valid JSON format only with following keys: goal(string), constraints (array of strings), options (array of strings), pros_cons (object which should list options which are also object. under each option we have two arrays pros[] and cons[]. under each of those two array we should have 3-5 elements), next_steps (array of strings). Now here is the input: {user_input}"""
-start_time=time.time()
+prompt=f"""Return your reply in valid JSON format only with following keys: goal(string), constraints (array of strings), options (array of strings), pros_cons (object which should list options which are also object. under each option we have two arrays pros[] and cons[]. under each of those two array we should have 3-5 elements), next_steps (array of strings), cheer (string - this is word of encouragement that you will provide). Now here is the input: {user_input}"""
 
 def call_model(prompt):
     completion = client.chat.completions.create(
@@ -51,14 +50,16 @@ while attempt < max_attempts:
 
     try:
             parsed_data=json.loads(json_text)
-            print(parsed_data["goal"]) #making sure accesability is achived
-            print(parsed_data["constraints"])
-            print(parsed_data["options"])
+            print("Goal: ",parsed_data["goal"], "\n" ) #making sure accesability is achived
+            print("Constrains: ",parsed_data["constraints"], "\n")
+            print("Options: ", parsed_data["options"], "\n")
+            print("Next steps: ", parsed_data["next_steps"], "\n")
+            print(parsed_data["cheer"], "\n")
             break
     
 
     except json.JSONDecodeError as e:
-            logger.error(f"JSON parsing failed, Error: {e}. Attempt {attempt+1} failed.")
+            logger.warning(f"JSON parsing failed, Error: {e}. Attempt {attempt+1} failed.")
             logger.info(f"Responce preview: {raw_response[:200]}") # handling exact error for easier debugging later
             attempt+=1
             continue
@@ -66,8 +67,8 @@ while attempt < max_attempts:
 if attempt == max_attempts:
     logger.error("Maximal number of retries reached.")
 
-duration=end_time-start_time#measuring time needed for model to respond
-logger.info(f"Time passed was {duration: 2f} seconds")
+duration=end_time-start_time #measuring time needed for model to respond
+logger.info(f"Model responce time was: {duration:.2f} seconds")
 
 
 
