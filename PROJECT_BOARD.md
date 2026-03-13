@@ -17,58 +17,82 @@ Allow voice input using a local speech model.
 TASK-010 – Packaging the tool
 Make the tool installable and runnable easily.
 
+TASK-012 – Prompt template system
+Create reusable prompt templates for different modes such as plan, summarize, and rage.
+
+TASK-013 – Model configuration layer
+Move model name, temperature, retries, and other settings into a configuration section.
+
+TASK-014 – Response cleaning module
+Create a function that cleans model responses (remove markdown blocks, stray text, and ensure JSON extraction).
+
+TASK-015 – Logging improvements
+Introduce structured logging levels and optional debug mode for inspecting raw model responses.
+
+TASK-016 – Evaluation dataset expansion
+Create a larger structured test dataset to systematically test prompts and model behavior.
+
+TASK-017 – Output formatting
+Improve CLI output readability (sections, separators, clearer labeling).
+
+TASK-018 – Error classification
+Differentiate between parsing errors, validation errors, and model format failures.
+
+TASK-019 – Result persistence
+Save test results and responses to files for later inspection.
+
+TASK-020 – Model abstraction layer
+Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other providers.
+
 ---
 
 ## This Sprint
 
-TASK-005 — Evaluation Harness (basic LLM testing)
+TASK-021 – Persistent logging to file
 
-Goal:
-Verify the tool consistently produces valid JSON and correct structure for different inputs.
+Goal  
+Store all runtime logs into files so test runs and model behavior can be analyzed later.
 
-Description:
-Create a small testing script that runs several predefined prompts through the tool automatically and validates that the output JSON contains required keys. This prevents prompt or model changes from silently breaking the system.
+Problem  
+Currently logs are printed only to terminal and are lost after program ends.  
+Real systems persist logs for debugging, monitoring, and evaluation.
 
-Subtasks:
+Acceptance Criteria
 
-[x] 005-1 Create test prompt dataset
-Create a Python list with 5–10 different decision problems (career change, relocation, budgeting, job offers, business idea, etc.).
+- Program writes logs to a file (e.g., app.log)
+- Log format includes timestamp, level, and message
+- Console logging still works
+- Errors are clearly visible in log file
+- Log file grows across runs (no overwrite)
 
-[x] 005-2 Run prompts automatically
-Replace user input with a loop that sends each test prompt to the model and collects responses.
+Learning Objective
 
-[x] 005-3 Validate required JSON keys
-Check that every response contains:
-goal
-constraints
-options
-pros_cons
-next_steps
-cheer
+- Understand how real applications handle logging
+- Learn Python logging handlers and formatters
+- Separate logging configuration from business logic
+- Prepare system for later evaluation and monitoring tasks
 
-Log an error if any key is missing.
+Subtasks
 
-[] 005-4 Track pass / fail results
-Log result for each test case.
-Example:
-Test 1 — PASS
-Test 2 — FAIL
+[ ] Subtask 1 – Configure FileHandler  
+Add logging handler that writes logs to a file.
 
-At the end print a summary:
-Total tests
-Passed
-Failed
+[ ] Subtask 2 – Define log format  
+Include timestamp, level, module name, message.
 
-005-5 Save evaluation results
-Write evaluation results to a log file (for example: eval_results.log).
+[ ] Subtask 3 – Keep console logging  
+Ensure StreamHandler still prints logs to terminal.
 
-Definition of Done:
+[ ] Subtask 4 – Test persistence  
+Run program twice and confirm logs append to file.
 
-• Script runs multiple prompts automatically
-• JSON parsing still works
-• Required keys are validated
-• Pass/fail summary printed
-• Results logged to file
+References
+
+Python logging tutorial  
+https://docs.python.org/3/howto/logging.html
+
+Logging handlers  
+https://docs.python.org/3/library/logging.handlers.html
 
 ---
 
@@ -240,5 +264,111 @@ https://docs.python.org/3/tutorial/controlflow.html#while-statements
 
 Python functions  
 https://docs.python.org/3/tutorial/controlflow.html#defining-functions
+
+---
+
+TASK-005 — Evaluation Harness (basic LLM testing)
+
+Goal:
+Verify the tool consistently produces valid JSON and correct structure for different inputs.
+
+Description:
+Create a small testing script that runs several predefined prompts through the tool automatically and validates that the output JSON contains required keys. This prevents prompt or model changes from silently breaking the system.
+
+Subtasks:
+
+[x] 005-1 Create test prompt dataset
+Create a Python list with 5–10 different decision problems (career change, relocation, budgeting, job offers, business idea, etc.).
+
+[x] 005-2 Run prompts automatically
+Replace user input with a loop that sends each test prompt to the model and collects responses.
+
+[x] 005-3 Validate required JSON keys
+Check that every response contains:
+goal
+constraints
+options
+pros_cons
+next_steps
+cheer
+
+Log an error if any key is missing.
+
+[x] 005-4 Track pass / fail results
+Log result for each test case.
+Example:
+Test 1 — PASS
+Test 2 — FAIL
+
+At the end print a summary:
+Total tests
+Passed
+Failed
+
+[x] 005-5 Save evaluation results
+Write evaluation results to a log file (for example: eval_results.log).
+
+Definition of Done:
+
+• Script runs multiple prompts automatically
+• JSON parsing still works
+• Required keys are validated
+• Pass/fail summary printed
+• Results logged to file
+
+---
+
+TASK-011 – Response structure validation
+
+Goal  
+Ensure the model response not only contains required keys but also follows expected structure and size rules.
+
+Problem  
+LLMs may return JSON with correct keys but wrong content structure (too few options, missing pros/cons, mismatched keys).  
+This can silently break downstream logic and reduce reliability.
+
+Acceptance Criteria
+
+- Program validates number of constraints (3–6)
+- Program validates number of options (2–4)
+- Program validates each option has matching entry inside pros_cons
+- Program validates each pros and cons list has 3–5 items
+- If validation fails → test is marked as failed and logged clearly
+- Validation logic is separated into a dedicated function
+
+Learning Objective
+
+- Learn defensive programming for AI outputs
+- Understand schema-like validation without external libraries
+- Practice iterating nested dictionaries and lists
+- Build production-style reliability checks
+
+Subtasks
+
+[x] Subtask 1 – Define validation rules  
+Create constants for min/max lengths (constraints, options, pros, cons).
+
+[x] Subtask 2 – Extend validation function  
+Update existing validate_response() to also check list lengths.
+
+[x] Subtask 3 – Validate pros_cons structure  
+Check that each option name exists as key inside pros_cons.
+
+[x] Subtask 4 – Validate pros/cons lengths  
+Loop through pros_cons entries and verify item counts.
+
+[x] Subtask 5 – Add validation logging  
+Log exactly which rule failed and for which test case.
+
+References
+
+Python len()  
+https://docs.python.org/3/library/functions.html#len
+
+Python dict iteration  
+https://docs.python.org/3/tutorial/datastructures.html#looping-techniques
+
+Python nested data structures  
+https://realpython.com/python-dicts/
 
 ---
