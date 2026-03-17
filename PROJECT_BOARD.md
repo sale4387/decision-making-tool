@@ -2,9 +2,6 @@
 
 ## Backlog
 
-TASK-006 – CLI UX improvements
-Improve terminal display and add modes such as `plan`, `summarize`, and `rage`.
-
 TASK-007 – Local memory and weekly summaries
 Store previous sessions and generate summaries.
 
@@ -48,55 +45,13 @@ Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other 
 
 ## This Sprint
 
-TASK-021 – Persistent logging to file
-
-Goal  
-Store all runtime logs into files so test runs and model behavior can be analyzed later.
-
-Problem  
-Currently logs are printed only to terminal and are lost after program ends.  
-Real systems persist logs for debugging, monitoring, and evaluation.
-
-Acceptance Criteria
-
-- Program writes logs to a file (e.g., app.log)
-- Log format includes timestamp, level, and message
-- Console logging still works
-- Errors are clearly visible in log file
-- Log file grows across runs (no overwrite)
-
-Learning Objective
-
-- Understand how real applications handle logging
-- Learn Python logging handlers and formatters
-- Separate logging configuration from business logic
-- Prepare system for later evaluation and monitoring tasks
-
-Subtasks
-
-[ ] Subtask 1 – Configure FileHandler  
-Add logging handler that writes logs to a file.
-
-[ ] Subtask 2 – Define log format  
-Include timestamp, level, module name, message.
-
-[ ] Subtask 3 – Keep console logging  
-Ensure StreamHandler still prints logs to terminal.
-
-[ ] Subtask 4 – Test persistence  
-Run program twice and confirm logs append to file.
-
-References
-
-Python logging tutorial  
-https://docs.python.org/3/howto/logging.html
-
-Logging handlers  
-https://docs.python.org/3/library/logging.handlers.html
-
 ---
 
 ## In Progress
+
+---
+
+## Project structure best practices
 
 ---
 
@@ -370,5 +325,172 @@ https://docs.python.org/3/tutorial/datastructures.html#looping-techniques
 
 Python nested data structures  
 https://realpython.com/python-dicts/
+
+---
+
+TASK-021 – Persistent logging to file
+
+Goal  
+Store all runtime logs into files so test runs and model behavior can be analyzed later.
+
+Problem  
+Currently logs are printed only to terminal and are lost after program ends.  
+Real systems persist logs for debugging, monitoring, and evaluation.
+
+Acceptance Criteria
+
+- Program writes logs to a file (e.g., app.log)
+- Log format includes timestamp, level, and message
+- Console logging still works
+- Errors are clearly visible in log file
+- Log file grows across runs (no overwrite)
+
+Learning Objective
+
+- Understand how real applications handle logging
+- Learn Python logging handlers and formatters
+- Separate logging configuration from business logic
+- Prepare system for later evaluation and monitoring tasks
+
+Subtasks
+
+[x] Subtask 1 – Configure FileHandler  
+Add logging handler that writes logs to a file.
+
+[x] Subtask 2 – Define log format  
+Include timestamp, level, module name, message.
+
+[x] Subtask 3 – Keep console logging  
+Keep using print() for terminal.
+
+[x] Subtask 4 – Test persistence  
+Run program twice and confirm logs append to file.
+
+References
+
+Python logging tutorial  
+https://docs.python.org/3/howto/logging.html
+
+Logging handlers  
+https://docs.python.org/3/library/logging.handlers.html
+
+---
+
+TASK-022 – Code modularization and project structure refactor
+
+Goal
+Restructure the project into clear modules so responsibilities are separated and the codebase becomes easier to maintain, extend, and test.
+
+Problem
+Currently most logic lives inside main.py.
+As features grow (validation, retries, modes, logging), the file becomes harder to read and reuse.
+Real applications organize code into modules by responsibility.
+
+Acceptance Criteria
+
+Project is split into logical modules (e.g., model.py, validation.py, config.py, cli.py)
+
+main.py becomes a thin entry point that orchestrates execution
+
+No business logic remains duplicated across files
+
+Shared constants are moved to a dedicated config module
+
+Functions receive dependencies via arguments (no reliance on globals from main)
+
+Program runs exactly the same after refactor
+
+Learning Objective
+
+Understand modular architecture in Python projects
+
+Learn separation of concerns
+
+Practice importing between modules
+
+Prepare system for packaging and scaling features
+
+Subtasks
+
+[x] Subtask 1 – Create config module
+Move model name, validation limits, required keys, retry limits into config.py.
+
+[x] Subtask 2 – Extract model interaction
+Move call_model() and related logic into model.py.
+
+[x] Subtask 3 – Extract validation logic
+Move validate_response() and validation helpers into validation.py.
+x[x] Subtask 4 – Extract CLI / mode logic
+Move argument parsing and mode routing into cli.py or modes.py.
+
+[x] Subtask 5 – Simplify main entry point
+Refactor main.py so it only initializes client, reads args, and calls workflow functions also keeps default route code block
+
+[x] Subtask 6 – Test refactored flow
+Run full test suite / manual tests and confirm identical behavior.
+
+References
+
+Python modules tutorial
+https://docs.python.org/3/tutorial/modules.html
+
+---
+
+TASK-006 – CLI UX improvements
+
+Goal  
+Improve terminal user experience and introduce simple execution modes such as `plan`, `summarize`, and `rage`.
+
+Problem  
+Current program runs tests in a fixed flow and prints raw technical output.  
+There is no structured interaction layer or user-friendly command interface.  
+Real tools provide modes that change behavior without modifying code.
+
+Acceptance Criteria
+
+- Program accepts CLI argument (e.g., --mode)
+- Supported modes: plan, summarize, rage
+- Each mode changes how results are displayed or processed
+- Default mode still runs current test flow
+- Invalid mode is handled with clear error message
+- Mode selection is logged
+
+Learning Objective
+
+- Learn basic CLI argument parsing in Python
+- Separate execution logic from presentation logic
+- Understand how real tools provide multiple workflows
+- Prepare architecture for future UX features
+
+Subtasks
+
+[x] Subtask 1 – Add argument parsing  
+Use argparse (or sys.argv) to read --mode parameter.
+
+[x] Subtask 2 – Define mode router  
+Create function that routes execution based on selected mode.
+
+[x] Subtask 3 – Implement `plan` mode  
+Show structured goals / options summary without running full validation loop.
+
+[x] Subtask 4 – Implement `summarize` mode  
+Display final pass/fail summary only.
+
+[x] Subtask 5 – Implement `rage` mode  
+Show verbose logs, retries, raw responses preview.
+
+[x] Subtask 6 – Handle invalid mode  
+Print help message and exit cleanly.
+
+References
+
+argparse documentation  
+https://docs.python.org/3/library/argparse.html
+
+sys.argv basics  
+https://docs.python.org/3/library/sys.html#sys.argv
+
+Python CLI design guide  
+https://realpython.com/command-line-interfaces-python-argparse/
 
 ---
