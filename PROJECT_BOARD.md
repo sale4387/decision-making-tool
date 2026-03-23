@@ -29,9 +29,6 @@ Introduce structured logging levels and optional debug mode for inspecting raw m
 TASK-016 – Evaluation dataset expansion
 Create a larger structured test dataset to systematically test prompts and model behavior.
 
-TASK-017 – Output formatting
-Improve CLI output readability (sections, separators, clearer labeling).
-
 TASK-018 – Error classification
 Differentiate between parsing errors, validation errors, and model format failures.
 
@@ -44,6 +41,65 @@ Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other 
 ---
 
 ## This Sprint
+
+TASK-014 – Response cleaning module
+
+Goal  
+Create a reusable function that cleans raw model responses before JSON parsing.
+
+Problem  
+LLM responses often contain markdown blocks (```json), explanations, duplicated text, or trailing characters.  
+This causes JSON parsing errors and makes retry logic less reliable.  
+Currently response cleaning logic is scattered inside main execution flow.
+
+Acceptance Criteria
+
+- Raw model response is passed through a dedicated cleaning function
+- Function removes markdown code fences (`/`json)
+- Function extracts first valid JSON object using { … } boundaries
+- Function trims whitespace and stray characters before/after JSON
+- Function returns cleaned JSON string ready for json.loads()
+- Cleaning module is reusable across all CLI modes
+- Cleaning failures are logged clearly
+- Partial cleaning success is acceptable (system may still retry)
+
+Learning Objective
+
+- Understand preprocessing pipelines in AI systems
+- Learn separation of concerns (model call vs response processing)
+- Improve robustness of JSON-driven workflows
+- Prepare system for multi-model support
+
+Subtasks
+
+[x] Subtask 1 – Create cleaning module  
+Create new file (e.g., `cleaner.py`) and define `clean_response(raw_text)` function.
+
+[ ] Subtask 2 – Remove markdown wrappers  
+Strip `json and ` blocks safely.
+
+[x] Subtask 3 – Extract JSON boundaries  
+Find first `{` and last `}` and slice response.
+
+[ ] Subtask 4 – Handle edge cases  
+Return `None` or raise controlled error if JSON cannot be extracted.
+
+[x] Subtask 5 – Integrate into main flow  
+Replace inline cleaning logic with module function.
+
+[x] Subtask 6 – Add logging  
+Log when cleaning modifies response or fails.
+
+References
+
+Python string methods  
+https://docs.python.org/3/library/stdtypes.html#string-methods
+
+Exception handling  
+https://docs.python.org/3/tutorial/errors.html
+
+Regular expressions (optional improvement)  
+https://docs.python.org/3/library/re.html
 
 ---
 
@@ -492,5 +548,53 @@ https://docs.python.org/3/library/sys.html#sys.argv
 
 Python CLI design guide  
 https://realpython.com/command-line-interfaces-python-argparse/
+
+---
+
+TASK-017 – Output formatting
+
+Goal  
+Improve readability of CLI output so results are easier to scan and understand.
+
+Problem  
+Current terminal output is raw and inconsistent.  
+When multiple tests run, it is difficult to quickly identify sections, results, and summaries.
+
+Acceptance Criteria
+
+- CLI output contains clear section headers (e.g., ===== TEST START =====)
+- Each test result is visually separated
+- Pass/fail status is clearly labeled
+- Final summary block is easy to read
+- No impact on validation or model logic
+- Partial implementation based on CLI route is acceptable, as well as flexibility on formats
+
+Learning Objective
+
+- Practice improving developer experience (DX)
+- Learn how presentation layer differs from business logic
+- Understand importance of structured output in CLI tools
+
+Subtasks
+
+[x] Subtask 1 – Add section separators  
+Print visual separators before and after each test case.
+
+[x] Subtask 2 – Standardize labels  
+Use consistent labels such as GOAL, CONSTRAINTS, OPTIONS, RESULT.
+
+[x] Subtask 3 – Improve pass/fail display  
+Highlight test result clearly (e.g., PASSED / FAILED).
+
+[x] Subtask 4 – Add final summary block  
+Display total tests, passed tests, failed tests in structured format.
+
+References
+
+Python print formatting  
+https://docs.python.org/3/tutorial/inputoutput.html
+
+String formatting  
+https://realpython.com/python-f-strings/
 
 ---
