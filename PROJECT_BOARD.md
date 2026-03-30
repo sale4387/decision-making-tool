@@ -17,23 +17,11 @@ Make the tool installable and runnable easily.
 TASK-012 – Prompt template system
 Create reusable prompt templates for different modes such as plan, summarize, and rage.
 
-TASK-013 – Model configuration layer
-Move model name, temperature, retries, and other settings into a configuration section.
-
-TASK-014 – Response cleaning module
-Create a function that cleans model responses (remove markdown blocks, stray text, and ensure JSON extraction).
-
-TASK-015 – Logging improvements
-Introduce structured logging levels and optional debug mode for inspecting raw model responses.
-
 TASK-016 – Evaluation dataset expansion
 Create a larger structured test dataset to systematically test prompts and model behavior.
 
 TASK-018 – Error classification
 Differentiate between parsing errors, validation errors, and model format failures.
-
-TASK-019 – Result persistence
-Save test results and responses to files for later inspection.
 
 TASK-020 – Model abstraction layer
 Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other providers.
@@ -41,65 +29,6 @@ Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other 
 ---
 
 ## This Sprint
-
-TASK-014 – Response cleaning module
-
-Goal  
-Create a reusable function that cleans raw model responses before JSON parsing.
-
-Problem  
-LLM responses often contain markdown blocks (```json), explanations, duplicated text, or trailing characters.  
-This causes JSON parsing errors and makes retry logic less reliable.  
-Currently response cleaning logic is scattered inside main execution flow.
-
-Acceptance Criteria
-
-- Raw model response is passed through a dedicated cleaning function
-- Function removes markdown code fences (`/`json)
-- Function extracts first valid JSON object using { … } boundaries
-- Function trims whitespace and stray characters before/after JSON
-- Function returns cleaned JSON string ready for json.loads()
-- Cleaning module is reusable across all CLI modes
-- Cleaning failures are logged clearly
-- Partial cleaning success is acceptable (system may still retry)
-
-Learning Objective
-
-- Understand preprocessing pipelines in AI systems
-- Learn separation of concerns (model call vs response processing)
-- Improve robustness of JSON-driven workflows
-- Prepare system for multi-model support
-
-Subtasks
-
-[x] Subtask 1 – Create cleaning module  
-Create new file (e.g., `cleaner.py`) and define `clean_response(raw_text)` function.
-
-[ ] Subtask 2 – Remove markdown wrappers  
-Strip `json and ` blocks safely.
-
-[x] Subtask 3 – Extract JSON boundaries  
-Find first `{` and last `}` and slice response.
-
-[ ] Subtask 4 – Handle edge cases  
-Return `None` or raise controlled error if JSON cannot be extracted.
-
-[x] Subtask 5 – Integrate into main flow  
-Replace inline cleaning logic with module function.
-
-[x] Subtask 6 – Add logging  
-Log when cleaning modifies response or fails.
-
-References
-
-Python string methods  
-https://docs.python.org/3/library/stdtypes.html#string-methods
-
-Exception handling  
-https://docs.python.org/3/tutorial/errors.html
-
-Regular expressions (optional improvement)  
-https://docs.python.org/3/library/re.html
 
 ---
 
@@ -596,5 +525,249 @@ https://docs.python.org/3/tutorial/inputoutput.html
 
 String formatting  
 https://realpython.com/python-f-strings/
+
+---
+
+TASK-014 – Response cleaning module
+
+Goal  
+Create a reusable function that cleans raw model responses before JSON parsing.
+
+Problem  
+LLM responses often contain markdown blocks (```json), explanations, duplicated text, or trailing characters.  
+This causes JSON parsing errors and makes retry logic less reliable.  
+Currently response cleaning logic is scattered inside main execution flow.
+
+Acceptance Criteria
+
+- Raw model response is passed through a dedicated cleaning function
+- Function removes markdown code fences (`/`json)
+- Function extracts first valid JSON object using { … } boundaries
+- Function trims whitespace and stray characters before/after JSON
+- Function returns cleaned JSON string ready for json.loads()
+- Cleaning module is reusable across all CLI modes
+- Cleaning failures are logged clearly
+- Partial cleaning success is acceptable (system may still retry)
+
+Learning Objective
+
+- Understand preprocessing pipelines in AI systems
+- Learn separation of concerns (model call vs response processing)
+- Improve robustness of JSON-driven workflows
+- Prepare system for multi-model support
+
+Subtasks
+
+[x] Subtask 1 – Create cleaning module  
+Create new file (e.g., `cleaner.py`) and define `clean_response(raw_text)` function.
+
+[x] Subtask 2 – Remove markdown wrappers  
+Strip `json and ` blocks safely.
+
+[x] Subtask 3 – Extract JSON boundaries  
+Find first `{` and last `}` and slice response.
+
+[x] Subtask 4 – Handle edge cases  
+Return `None` or raise controlled error if JSON cannot be extracted.
+
+[x] Subtask 5 – Integrate into main flow  
+Replace inline cleaning logic with module function.
+
+[x] Subtask 6 – Add logging  
+Log when cleaning modifies response or fails.
+
+References
+
+Python string methods  
+https://docs.python.org/3/library/stdtypes.html#string-methods
+
+Exception handling  
+https://docs.python.org/3/tutorial/errors.html
+
+Regular expressions (optional improvement)  
+https://docs.python.org/3/library/re.html
+
+---
+
+TASK-013 – Model configuration layer
+
+Goal
+Centralize all model-related settings into a dedicated configuration structure so the system becomes easier to tune, debug, and extend.
+
+Problem
+Currently model name, retry limits, validation limits, and other runtime parameters are scattered across modules.
+This makes experimentation harder and increases risk of inconsistent behavior.
+
+Acceptance Criteria
+
+Model name is defined in one configuration location
+Retry limits are configurable without modifying logic files
+Validation limits (e.g., constraints count, options count) are stored in config
+API-related parameters (e.g., temperature, max tokens if used) are configurable
+All modules read settings from config instead of hardcoding values
+Program behavior remains identical after refactor
+
+Learning Objective
+
+Learn configuration patterns used in production systems
+Understand separation between code logic and runtime parameters
+Prepare architecture for multi-model and environment switching
+Practice passing config into functions instead of relying on globals
+
+Subtasks
+
+[x] Subtask 1 – Define configuration structure
+Create dictionary or constants in config.py for model settings and limits.
+
+[x] Subtask 2 – Move model parameters
+Move model name and retry count from code into config.
+
+[x] Subtask 3 – Move validation limits
+Store min/max lengths for constraints, options, pros, cons, next_steps in config.
+
+[x] Subtask 4 – Refactor imports
+Update modules to read values from config instead of local variables.
+
+[x] Subtask 5 – Verify behavior
+Run evaluation harness and confirm results are unchanged.
+
+References
+
+Python configuration patterns
+https://realpython.com/python-application-configuration/
+
+Python modules
+https://docs.python.org/3/tutorial/modules.html
+
+---
+
+TASK-019 – Result persistence
+
+Goal  
+Persist evaluation results and model responses to files so runs can be reviewed, compared, and analyzed later.
+
+Problem  
+Currently test results are only visible in terminal and partially in logs.  
+There is no structured storage of outcomes (PASS/FAIL), cleaned JSON, or raw model responses.  
+Real AI systems persist outputs for debugging, regression testing, and performance tracking.
+
+Acceptance Criteria
+
+- Program saves evaluation results to a structured file (e.g., results.json or results.csv)
+- Each test case record includes:
+  - test name
+  - pass / fail status
+  - number of retries
+  - response time
+  - validation errors (if any)
+- Optionally store cleaned JSON response
+- Optionally store raw model response preview
+- File appends or creates new run section (no silent overwrite)
+- Saving results does not break CLI modes
+- Persistence logic is separated into a dedicated module
+
+Learning Objective
+
+- Understand result tracking in AI pipelines
+- Learn structured file writing (JSON / CSV)
+- Practice designing simple data schemas
+- Prepare system for later analytics and dashboards
+
+Subtasks
+
+[x] Subtask 1 – Design result schema  
+Define Python dictionary structure for one test result.
+
+[x] Subtask 2 – Collect results during evaluation  
+Accumulate results in a list during test loop.
+
+[x] Subtask 3 – Create persistence module  
+Create file such as `persistence.py` with function `save_results(results)`.
+
+[x] Subtask 4 – Write results to JSON file  
+Serialize results list using `json.dump()`.
+
+[x] Subtask 5 – Prevent overwrite  
+Append timestamped run section or create new file per run.
+
+[x] Subtask 6 – Integrate into evaluation flow  
+Call save function after summary block.
+
+References
+
+Python JSON writing  
+https://docs.python.org/3/library/json.html#json.dump
+
+Working with files  
+https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files
+
+---
+
+TASK-015 – Improve logging system
+
+Goal  
+Introduce structured logging across the AI pipeline so each run can be traced end-to-end.  
+Logs should help understand failures, retries, model behavior, and validation issues.
+
+Problem  
+Currently logging is partial and inconsistent across modules.  
+Some important events (cleaning step, model retries, validation errors, scoring decisions) are not clearly visible.  
+In real AI systems, structured logs are essential for debugging, monitoring, and reproducibility.
+
+Acceptance Criteria
+
+- Each pipeline run logs:
+  - raw user input
+  - cleaned input
+  - model request start
+  - retry attempts (if any)
+  - raw model response preview
+  - cleaned JSON response
+  - validation result
+  - scoring result
+- Errors include meaningful context (which test, which step, which exception)
+- Logging level can be configured (INFO vs DEBUG)
+- Logging format is consistent across modules
+- Logs do not break CLI modes
+- Logger initialization is centralized (no duplicate setup)
+
+Learning Objective
+
+- Understand observability in AI pipelines
+- Practice structured logging design
+- Learn logging levels and debugging strategies
+- Improve system reliability mindset
+- Prepare system for future scaling and monitoring
+
+Subtasks
+
+[x] Subtask 1 – Define logging strategy  
+Decide what events must be logged and at which level (INFO / DEBUG / ERROR).
+
+[x] Subtask 2 – Centralize logger setup  
+Ensure single logger configuration reused across modules.
+
+[x] Subtask 3 – Add pipeline step logs  
+Log transitions: input → cleaning → model call → validation → scoring.
+
+[x] Subtask 4 – Add retry attempt logging  
+Log retry count, reason for retry, and delay if implemented.
+
+[x] Subtask 5 – Improve error logging  
+Wrap model / validation / parsing blocks with contextual error logs.
+
+[x] Subtask 6 – Add logging level configuration  
+Allow switching verbosity via config or CLI flag.
+
+[x] Subtask 7 – Validate logs during evaluation run  
+Run evaluation mode and confirm logs are readable and complete.
+
+References
+
+Python logging HOWTO  
+https://docs.python.org/3/howto/logging.html
+
+Logging library reference  
+https://docs.python.org/3/library/logging.html
 
 ---

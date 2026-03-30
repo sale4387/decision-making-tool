@@ -1,40 +1,50 @@
-from huggingface_hub import InferenceClient
 import os
-from dotenv import load_dotenv
-load_dotenv()
 
-client = InferenceClient(
-    api_key=os.getenv("HF_TOKEN"),
-)
 
-model_name="Qwen/Qwen2.5-1.5B-Instruct:featherless-ai"
+HF_TOKEN=os.getenv("HF_TOKEN")
+MODEL_NAME="Qwen/Qwen2.5-1.5B-Instruct:featherless-ai"
+MODEL_PROVIDER = "huggingface"
 
-required_keys = [
-    "goal",
-    "constraints",
-    "options",
-    "pros_cons",
-    "next_steps",
-    "cheer"
-]
+MAX_RETRIES = 3
+RETRY_DELAY_SECONDS = 2
+MODEL_TIMEOUT = 60
 
-required_keys_plan = [
-    "goal",
-    "options",
-    "next_steps",
-    "cheer"
-]
+LOG_LEVEL = "INFO"
 
-min_len_constraints = 3
-max_len_constraints = 6
-min_len_options = 2
-max_len_options = 4
-min_len_pros = 3
-max_len_pros = 5
-min_len_cons= 3
-max_len_cons= 5
-min_len_next_steps = 3
-max_len_next_steps = 5
+allowed_log_levels=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
+
+TEMPERATURE = 0.3
+MAX_TOKENS = 800
+TOP_P = 0.9
+
+required_keys ={
+    "default":
+      [
+        "goal",
+        "constraints",
+        "options",
+        "pros_cons",
+        "next_steps",
+        "cheer"
+      ],
+    "plan":
+      [
+        "goal",
+        "options",
+        "next_steps",
+        "cheer" 
+      ]
+}
+
+validation_rules={
+ "constraints":(3,6),  
+ "options": (2,4),
+ "pros":(3,5),
+ "cons":(3,5),
+ "next_steps":(3,5)
+}
+
+
 
 input1="""Constant market changes, pressure to get results, wars, expansion of AI and personal feeling of no motivation in current job are every day concerns for me. Also during covid expecialy i was thinking a lot about starting to do something with my hands. During renovation of my own appartment and later with moving to NL i realized that for example laying tiles is well paid job, not an easy one abut the one that can be learned as anything else with practice. Initialy i would do some work for myself but who knows, maybe it can be occasional source of income. I did a lot of reserach and theory is not the problem what pesrson needs to do is to give it a try make mistakes and learn from them. It would be great if there is a way for mistakes not to be expensive ones"""
 input2="""I am still on HSM visa in NL, 1st of Aug 27 i ll be eligeble to apply for permanent visa and later passport. AS i ll lose 30 percent rulling on kid is in kindergarten another to be born in june i am thinking about my situation once i get the passport. Also have a house i nl probably i ll make nice profit in two years from now or so and i always wanted to go to live in spain too... depending on job situation and profit with house if i can by real estate in valencia or similar with that profit could be interesting story. On the other hand better job market and living standard is in NL"""
@@ -51,65 +61,68 @@ user_input_test = [
     {"name": "cat_costs", "input":input5},
 ]
 
-model_instructions = """
-Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON.
+model_instructions ={
+    "default":
+      """
+        Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON.
 
-The JSON must contain exactly these keys:
+        The JSON must contain exactly these keys:
 
-goal: string
+        goal: string
 
-constraints: array of strings (3–6 items)
+        constraints: array of strings (3–6 items)
 
-options: array of option names as strings (2–4 items)
+        options: array of option names as strings (2–4 items)
 
-pros_cons: object where each key matches an option name from "options".
-Each option must contain:
-    pros: array of strings (3–5 items)
-    cons: array of strings (3–5 items)
+        pros_cons: object where each key matches an option name from "options".
+        Each option must contain:
+            pros: array of strings (3–5 items)
+            cons: array of strings (3–5 items)
 
-next_steps: array of strings (3–5 actionable steps)
+        next_steps: array of strings (3–5 actionable steps)
 
-cheer: string (short encouraging message)
+        cheer: string (short encouraging message)
 
-Example structure:
+        Example structure:
 
-{
-  "goal": "...",
-  "constraints": ["...", "..."],
-  "options": ["option A", "option B"],
-  "pros_cons": {
-    "option A": {
-      "pros": ["...", "..."],
-      "cons": ["...", "..."]
-    },
-    "option B": {
-      "pros": ["...", "..."],
-      "cons": ["...", "..."]
-    }
-  },
-  "next_steps": ["...", "..."],
+        {
+          "goal": "...",
+          "constraints": ["...", "..."],
+          "options": ["option A", "option B"],
+          "pros_cons": {
+            "option A": {
+              "pros": ["...", "..."],
+              "cons": ["...", "..."]
+            },
+            "option B": {
+              "pros": ["...", "..."],
+              "cons": ["...", "..."]
+            }
+          },
+          "next_steps": ["...", "..."],
+        }
+      """,
+    "plan":
+      """
+          Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON.
+
+          The JSON must contain exactly these keys:
+
+          goal: string
+
+          options: array of option names as strings (2–4 items)
+
+          next_steps: array of strings (3–5 actionable steps)
+
+          cheer: string (short encouraging message)
+
+          Example structure:
+
+          {
+            "goal": "...",
+            "options": ["option A", "option B"],
+            "next_steps": ["...", "..."],
+            "cheer": "..."
+          }
+      """
 }
-"""
-
-model_instructions_plan = """
-Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON.
-
-The JSON must contain exactly these keys:
-
-goal: string
-
-options: array of option names as strings (2–4 items)
-
-next_steps: array of strings (3–5 actionable steps)
-
-cheer: string (short encouraging message)
-
-Example structure:
-
-{
-  "goal": "...",
-  "options": ["option A", "option B"],
-  "next_steps": ["...", "..."],
-  "cheer": "..."
-}
-"""
