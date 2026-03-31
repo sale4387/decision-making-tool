@@ -1,10 +1,10 @@
 import argparse
 from model import call_model
-from config import user_input_test, model_instructions, allowed_log_levels
+from config import user_input_test, model_instructions, allowed_log_levels, ALLOWED_CATEGORIES
 import time
 from model import call_model
 import json
-from validation import validate_response_default, validate_response_partial, validate_response_minimal
+from validation import validate_response_default, validate_response_partial, validate_response_minimal, validate_test_cases
 from model import call_model
 from evaluation import evaluation
 from cleaner import clean_response
@@ -16,6 +16,13 @@ logger=logging.getLogger(__name__)
 failed_tests=[]
 passed_tests=[]
 test_results=[]
+category_results = {}
+ERROR_COUNTS = {
+    "MODEL_ERROR": 0,
+    "CLEANER_ERROR": 0,
+    "PARSE_ERROR": 0,
+    "VALIDATION_ERROR": 0
+}
 
 def get_cli_args():
     parser = argparse.ArgumentParser()
@@ -25,22 +32,37 @@ def get_cli_args():
     return args.mode, args.llevel.upper() if args.llevel else None
 
 def function_test(mode):
+
+      validate_test_cases(user_input_test, ALLOWED_CATEGORIES)
+
       for test_case in user_input_test:
+
             logger.info(f"Test {test_case['name']} started.")
             user_input=test_case["input"]
             prompt=f"""{model_instructions["default"]} Now here is the input: {user_input}"""
             max_attempts = 3
             attempt = 0
             start_time=time.time()
-
+            error_type = None
+            response_validated = (None, None)
             while attempt < max_attempts:
                         
-                        raw_response=call_model(prompt)
+                        try:
+                              raw_response = call_model(prompt)
+
+                        except Exception:
+                              attempt += 1
+                              logger.debug(f"Attempt {attempt} failed, model error.")
+                              error_type = "MODEL_ERROR"
+                              ERROR_COUNTS["MODEL_ERROR"] += 1
+                              continue
+
                         cleaner_status, json_text= clean_response(raw_response)
                         if cleaner_status == False:
                               attempt+=1
                               logger.debug(f"Attempt {attempt} failed, no JSON object found.")
-
+                              error_type="CLEANER_ERROR"
+                              ERROR_COUNTS["CLEANER_ERROR"]+=1
                               continue
                         try:
                                 parsed_data=json.loads(json_text)
@@ -49,17 +71,20 @@ def function_test(mode):
                                 if response_validated[0]:
                                     passed_tests.append(test_case['name'])
                                     test_status="passed"
+                                    error_type=None
                                     break
                                 else:
                                     attempt+=1
                                     logger.debug(f"Attempt {attempt} failed, validation error(s).")
-
+                                    error_type="VALIDATION_ERROR"
+                                    ERROR_COUNTS["VALIDATION_ERROR"]+=1
                                     continue
                                 
                         except json.JSONDecodeError as e:
                                 attempt+=1
                                 logger.debug(f"Attempt {attempt} failed, pharsing error.")
-
+                                error_type="PARSE_ERROR"
+                                ERROR_COUNTS["PARSE_ERROR"]+=1
                                 continue
                         
             end_time=time.time()
@@ -70,8 +95,24 @@ def function_test(mode):
                     test_status="failed"
 
             logger.info(f"{test_case['name']} - {test_status}")
-            test_results.append({"name":test_case['name'],"status":test_status,"attempts":attempt,"errors":response_validated[1],"duration":duration})
+
+            cat = test_case["category"]
+            if cat not in category_results:
+                  category_results[cat] = {"passed": 0, "failed": 0}
+
+            if test_status == "passed":
+                  category_results[cat]["passed"] += 1
+            else:
+                  category_results[cat]["failed"] += 1
+
+            test_results.append({"name":test_case['name'],"status":test_status,"attempts":attempt,"error_type":error_type,"errors":response_validated[1],"duration":duration})
             logger.info(f"{test_case['name']} is finished.")
+
+      for err, count in ERROR_COUNTS.items():
+            logger.info(f"{err}: {count}")
+
+      for cat, stats in category_results.items():
+            logger.info(f"Category {cat}: {stats['passed']} passed, {stats['failed']} failed")
 
       evaluation(failed_tests, passed_tests)
       save_results(test_results, mode)

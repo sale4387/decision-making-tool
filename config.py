@@ -51,14 +51,42 @@ input2="""I am still on HSM visa in NL, 1st of Aug 27 i ll be eligeble to apply 
 input3="""Since may last year i did a course on Dutch language, passed a1 and a2 exams but i got a bit tired of it...going to clases and learing on class was easy but doing homework was too much to me so i made a break.. I want to learn maybe b1 level so i can be able to speak with peopel and use this skill really to apply for jobs and be better candidate. However i need to pass inburgering too so after my pause i need to decide whatever i should prepare inburgering and then think of starting b1 or to start b1 and do inburgering while going going to b1"""
 input4="""My contract with Odido NL will expeire on 13th of april and i have pixel 8 phone which i need to by out from them for 200 eur if i want t okeep it...option is to return it and to get cca 100 eur but i am not sure...as i am not really a phone guy and i dont like spending money on phones not really sure if i want to deal with it looking for new phone or simply to keep this one and pay 200 eur"""
 input5="""My cat annual bill for vet is 72 eur which includes vacination and yearly check up...but this year she had anemia so we spend cca 400 eur on top of vaccination. i am thinking whatever it is a good idea to get insurance which i ll have to pay up to 25 eur per month"""
+input6 = "Should I buy a used car for 3000 euros or keep using public transport?"
+input7 = "I have 500 euros and need to decide between fixing my laptop or buying a new phone."
+input8 = "I can only work 20 hours per week due to childcare. Should I look for a new job or stay?"
+input9 = "Not sure what to do next in life."
+input10 = "job bad money low tired maybe change idk"
+input11 = "I want to move abroad but also stay close to family and also save money and also travel a lot."
+input12 = "Should I invest in crypto or keep savings in cash if I might need money soon?"
+input13 = "I want to start a business but I have no savings and high rent."
+input14 = "Should I learn Python or focus on improving my current job skills?"
+input15 = "I feel stuck in my job and want change but I am afraid of losing stability."
+
+ALLOWED_CATEGORIES = [
+    "simple",
+    "complex",
+    "constrained",
+    "ambiguous",
+    "messy",
+    "edge"
+]
 
 user_input_test = [
-     
-    {"name": "job_change", "input":input1},
-    {"name": "move_country", "input":input2},
-    {"name": "learn_dutch", "input":input3},
-    {"name": "phone_situation", "input":input4},
-    {"name": "cat_costs", "input":input5},
+    {"name": "job_change", "input": input1, "category": "complex"},
+    {"name": "move_country", "input": input2, "category": "complex"},
+    {"name": "learn_dutch", "input": input3, "category": "complex"},
+    {"name": "phone_situation", "input": input4, "category": "simple"},
+    {"name": "cat_costs", "input": input5, "category": "constrained"},
+    {"name": "cheap_car_vs_transport", "input": input6, "category": "simple"},
+    {"name": "laptop_vs_phone", "input": input7, "category": "constrained"},
+    {"name": "part_time_job_limit", "input": input8, "category": "constrained"},
+    {"name": "unclear_life_direction", "input": input9, "category": "ambiguous"},
+    {"name": "messy_input_case", "input": input10, "category": "messy"},
+    {"name": "conflicting_goals", "input": input11, "category": "edge"},
+    {"name": "crypto_vs_cash", "input": input12, "category": "constrained"},
+    {"name": "business_no_money", "input": input13, "category": "edge"},
+    {"name": "learn_vs_stay", "input": input14, "category": "simple"},
+    {"name": "fear_vs_change", "input": input15, "category": "ambiguous"},
 ]
 
 model_instructions ={

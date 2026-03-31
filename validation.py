@@ -72,3 +72,10 @@ def validate_response_minimal(parsed_data):
 
             else:
                   return[True, error_log_message]
+            
+def validate_test_cases(test_cases, allowed_categories):
+    for test_case in test_cases:
+        if "category" not in test_case:
+            raise ValueError(f"Missing category in {test_case['name']}")
+        if test_case["category"] not in allowed_categories:
+            raise ValueError(f"Invalid category {test_case['category']} in {test_case['name']}")

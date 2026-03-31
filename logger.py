@@ -2,7 +2,7 @@ import logging
 from config import LOG_LEVEL
 
 level= getattr(logging, LOG_LEVEL)
-logging.getLogger("httpx").setLevel(logging.WARNING)
+logging.getLogger("httpx").setLevel(logging.WARNING) #removes noise in log file from errors from outside
 logging.getLogger("httpcore").setLevel(logging.WARNING)
 
 logging.basicConfig(

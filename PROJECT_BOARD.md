@@ -17,12 +17,6 @@ Make the tool installable and runnable easily.
 TASK-012 – Prompt template system
 Create reusable prompt templates for different modes such as plan, summarize, and rage.
 
-TASK-016 – Evaluation dataset expansion
-Create a larger structured test dataset to systematically test prompts and model behavior.
-
-TASK-018 – Error classification
-Differentiate between parsing errors, validation errors, and model format failures.
-
 TASK-020 – Model abstraction layer
 Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other providers.
 
@@ -42,7 +36,61 @@ Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other 
 
 ## Blocked
 
-(No blocked tasks)
+TASK-016 – Evaluation dataset expansion
+
+Goal  
+Create a larger and more structured evaluation dataset to systematically test model behavior, prompt quality, and system reliability.
+
+Problem  
+Current evaluation dataset is small and limited.  
+It does not cover enough variation in real-world scenarios, making it difficult to assess model consistency, edge cases, and failure patterns.  
+Without a richer dataset, evaluation results are not reliable or representative.
+
+Acceptance Criteria
+
+- Dataset contains at least 15–25 test cases
+- Test cases cover different categories (e.g., career, finance, personal decisions, ambiguity, edge cases)
+- Each test case has:
+  - name
+  - input text
+- Dataset remains easy to extend (simple structure, no hardcoding in logic)
+- Evaluation runs without modification to existing pipeline
+- New dataset improves visibility of failures and inconsistencies
+
+Learning Objective
+
+- Learn how to design evaluation datasets for AI systems
+- Understand importance of coverage and edge cases
+- Practice thinking in terms of test scenarios instead of single inputs
+- Improve ability to benchmark and compare model behavior
+
+Subtasks
+
+[x] Subtask 1 – Analyze current dataset  
+Review existing test cases and identify missing categories or weaknesses.
+
+[x] Subtask 2 – Define dataset categories  
+Define 4–6 categories (e.g., simple, complex, ambiguous, edge cases, emotional, practical).
+
+[x] Subtask 3 – Create additional test cases  
+Add new test cases to reach at least 15–25 total.
+
+[x] Subtask 4 – Ensure consistent structure  
+Verify all test cases follow same schema (name + input + category).
+
+[ ] Subtask 5 – Run evaluation with expanded dataset  
+Execute tests and observe differences in pass/fail rates.
+
+[ ] Subtask 6 – Document findings  
+Summarize what types of inputs fail or degrade model performance.
+
+References
+
+Prompt evaluation best practices  
+https://platform.openai.com/docs/guides/evals
+
+Dataset design basics  
+https://developers.google.com/machine-learning/data-prep/construct/sampling-splitting
 
 ---
 
@@ -769,5 +817,67 @@ https://docs.python.org/3/howto/logging.html
 
 Logging library reference  
 https://docs.python.org/3/library/logging.html
+
+---
+
+TASK-018 – Error classification
+
+Goal  
+Classify and track different types of failures in the AI pipeline to better understand where and why the system breaks.
+
+Problem  
+Currently all failures are treated similarly (fail / retry), without distinguishing the root cause.  
+This makes it difficult to analyze model reliability, debug issues, and understand whether failures come from the model, parsing, validation, or preprocessing.
+
+Acceptance Criteria
+
+- System distinguishes at least the following error types:
+  - cleaner failure (no JSON extracted)
+  - parsing error (invalid JSON)
+  - validation error (schema/structure issues)
+  - model error (API / runtime failure)
+- Each failure type is:
+  - logged clearly
+  - tracked per test case
+- Final summary includes count of each error type
+- Classification does not break existing retry logic
+- Error classification integrates with existing logging system
+
+Learning Objective
+
+- Understand failure modes in AI pipelines
+- Learn how to categorize errors for debugging and analysis
+- Improve observability beyond pass/fail metrics
+- Prepare system for evaluation insights and monitoring
+
+Subtasks
+
+[x] Subtask 1 – Define error categories  
+Create a fixed set of error types (e.g., CLEANER_ERROR, PARSE_ERROR, VALIDATION_ERROR, MODEL_ERROR).
+
+[x] Subtask 2 – Map errors in pipeline  
+Identify where each error occurs (cleaner, json.loads, validation, model call).
+
+[x] Subtask 3 – Track error per test  
+Store error type during retries and final result.
+
+[x] Subtask 4 – Aggregate error statistics  
+Count occurrences of each error type across all tests.
+
+[x] Subtask 5 – Log error summary  
+Log total counts per error type at the end of run.
+
+[x] Subtask 6 – Verify behavior  
+Run evaluation and confirm classification is correct and consistent.
+
+References
+
+Error handling patterns in Python  
+https://docs.python.org/3/tutorial/errors.html
+
+Observability concepts  
+https://martinfowler.com/articles/observability.html
+
+---
 
 ---
