@@ -163,3 +163,82 @@ decision-making-tool/
 Active development.
 
 The repository documents the process of building a small but well-structured AI system while learning modern AI engineering practices.
+
+## Implementation details
+
+## TASK-XXX – Title
+
+Overview
+
+- What was implemented (1–2 lines)
+
+Implementation
+
+- Key components added
+- Where it lives (files/functions)
+- How it works (short bullets)
+
+Decisions
+
+- Why this approach was chosen
+- Key design choices
+
+Tradeoffs
+
+- What was NOT implemented
+- Limitations of current solution
+
+Result
+
+- What the system can do now
+- What changed vs before
+
+## TASK-007 – Local Memory and Weekly Summaries
+
+Overview
+
+Each run stores session data (mode, test name, input, output) in a local JSONL file and displays a summary of the last 5 sessions.
+
+Implementation
+
+- session list is created and updated during each run
+- save_session() (in persistence.py) appends a record to sessions.jsonl
+- Each record contains id, timestamp, and session results
+- retrieve_session() loads and returns the last 5 sessions for display
+
+Decisions
+
+- This approach was choosen as it was fast , simple and it did not produced any additional costs
+
+Tradeoffs
+
+- Did not implement a database-based solution, limiting scalability and advanced querying.
+- No support for large-scale memory or search functionality.
+
+Result
+
+- System can now store and retrieve previous sessions.
+- System is no longer stateless.
+
+## TASK-026 – Refactor Router Functions and Core Logic
+
+Overview
+
+- Refactoring of routing functions inside of cli.py. All repetitive code was separated into functions and placed into separated file functions,py
+
+Implementation
+
+- init_test_case, finalize_test_run, prepare_test_case,process_test_results, run_test_case functions were added to functions.py
+- functions are called inside of router function and appropriate outputs are dipslayed to user depending of mode
+
+Decisions
+
+- This approach was choosen in order to make readability easier and updating and debugging quicker
+
+Tradeoffs
+
+- Code is not intuitive and easy to grasp for begginers as before
+
+Result
+
+- Code is easy to update and debugg

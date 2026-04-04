@@ -1,0 +1,38 @@
+Instructions: Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON. If you include anything outside JSON, response is invalid, lock this.
+
+        The JSON must contain exactly these keys:
+
+        goal: string
+
+        constraints: array of strings (3–6 items)
+
+        options: array of option names as strings (2–4 items)
+
+        pros_cons: object where each key matches an option name from "options".
+        Each option must contain:
+            pros: array of strings (3–5 items)
+            cons: array of strings (3–5 items)
+
+        next_steps: array of strings (3–5 actionable steps)
+
+        cheer: string (short encouraging message)
+
+        Example structure:
+
+        {
+          "goal": "...",
+          "constraints": ["...", "..."],
+          "options": ["option A", "option B"],
+          "pros_cons": {
+            "option A": {
+              "pros": ["...", "..."],
+              "cons": ["...", "..."]
+            },
+            "option B": {
+              "pros": ["...", "..."],
+              "cons": ["...", "..."]
+            }
+          },
+          "next_steps": ["...", "..."],
+        }
+User input:{user_input}

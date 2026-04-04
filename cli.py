@@ -1,28 +1,12 @@
 import argparse
-from model import call_model
-from config import user_input_test, model_instructions, allowed_log_levels, ALLOWED_CATEGORIES
-import time
-from model import call_model
-import json
-from validation import validate_response_default, validate_response_partial, validate_response_minimal, validate_test_cases
-from model import call_model
-from evaluation import evaluation
-from cleaner import clean_response
-from persistence import save_results
-import logging, logger
+from config import user_input_test, allowed_log_levels
+from validation import validate_response_default, validate_response_partial, validate_response_minimal
+import logging
+from functions import init_test_case, finalize_test_run, prepare_test_case,process_test_results, run_test_case
 
 logger=logging.getLogger(__name__)
 
-failed_tests=[]
-passed_tests=[]
-test_results=[]
-category_results = {}
-ERROR_COUNTS = {
-    "MODEL_ERROR": 0,
-    "CLEANER_ERROR": 0,
-    "PARSE_ERROR": 0,
-    "VALIDATION_ERROR": 0
-}
+
 
 def get_cli_args():
     parser = argparse.ArgumentParser()
@@ -31,350 +15,124 @@ def get_cli_args():
     args = parser.parse_args()
     return args.mode, args.llevel.upper() if args.llevel else None
 
-def function_test(mode):
 
-      validate_test_cases(user_input_test, ALLOWED_CATEGORIES)
+
+            
+def function_test(mode):
+      
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,client, input_based_on_mode=init_test_case(mode)
 
       for test_case in user_input_test:
+            
+            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
 
-            logger.info(f"Test {test_case['name']} started.")
-            user_input=test_case["input"]
-            prompt=f"""{model_instructions["default"]} Now here is the input: {user_input}"""
-            max_attempts = 3
-            attempt = 0
-            start_time=time.time()
-            error_type = None
-            response_validated = (None, None)
-            while attempt < max_attempts:
-                        
-                        try:
-                              raw_response = call_model(prompt)
+            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(client, prompt, validate_response_minimal)
+            
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data)
+            
+            if error_type:
+                  ERROR_COUNTS[error_type] += 1
 
-                        except Exception:
-                              attempt += 1
-                              logger.debug(f"Attempt {attempt} failed, model error.")
-                              error_type = "MODEL_ERROR"
-                              ERROR_COUNTS["MODEL_ERROR"] += 1
-                              continue
-
-                        cleaner_status, json_text= clean_response(raw_response)
-                        if cleaner_status == False:
-                              attempt+=1
-                              logger.debug(f"Attempt {attempt} failed, no JSON object found.")
-                              error_type="CLEANER_ERROR"
-                              ERROR_COUNTS["CLEANER_ERROR"]+=1
-                              continue
-                        try:
-                                parsed_data=json.loads(json_text)
-                                response_validated= validate_response_minimal(parsed_data)
-
-                                if response_validated[0]:
-                                    passed_tests.append(test_case['name'])
-                                    test_status="passed"
-                                    error_type=None
-                                    break
-                                else:
-                                    attempt+=1
-                                    logger.debug(f"Attempt {attempt} failed, validation error(s).")
-                                    error_type="VALIDATION_ERROR"
-                                    ERROR_COUNTS["VALIDATION_ERROR"]+=1
-                                    continue
-                                
-                        except json.JSONDecodeError as e:
-                                attempt+=1
-                                logger.debug(f"Attempt {attempt} failed, pharsing error.")
-                                error_type="PARSE_ERROR"
-                                ERROR_COUNTS["PARSE_ERROR"]+=1
-                                continue
-                        
-            end_time=time.time()
-            duration=end_time-start_time
-                
-            if attempt == max_attempts:   
-                    failed_tests.append(test_case['name'])
-                    test_status="failed"
-
-            logger.info(f"{test_case['name']} - {test_status}")
-
-            cat = test_case["category"]
-            if cat not in category_results:
-                  category_results[cat] = {"passed": 0, "failed": 0}
-
-            if test_status == "passed":
-                  category_results[cat]["passed"] += 1
-            else:
-                  category_results[cat]["failed"] += 1
-
-            test_results.append({"name":test_case['name'],"status":test_status,"attempts":attempt,"error_type":error_type,"errors":response_validated[1],"duration":duration})
-            logger.info(f"{test_case['name']} is finished.")
-
-      for err, count in ERROR_COUNTS.items():
-            logger.info(f"{err}: {count}")
-
-      for cat, stats in category_results.items():
-            logger.info(f"Category {cat}: {stats['passed']} passed, {stats['failed']} failed")
-
-      evaluation(failed_tests, passed_tests)
-      save_results(test_results, mode)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
 
 def function_plan(mode):
+
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,client, input_based_on_mode=init_test_case(mode)
+
       for test_case in user_input_test:
-            logger.info(f"Test {test_case['name']} started.")
-            user_input = test_case["input"]
-            prompt= f"{model_instructions["plan"]} Now here is the input: {user_input}"
-            max_attempts = 3
-            attempt = 0
-            print(f"\n ====== Running test: ======\n {test_case['name']}\n")
-            start_time=time.time()
+            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
 
-            while attempt < max_attempts:
-                  raw_response=call_model(prompt)
-
-                  cleaner_status, json_text= clean_response(raw_response)
-
-                  if cleaner_status == False:
-                        attempt+=1
-                        print(f'====== WARNING ======\n No JSON object found in model response. Attempt {attempt} failed.\n')
-                        logger.debug(f"Attempt {attempt} failed, no JSON object found.")
-                        continue
-
-                  try:
-                      parsed_data=json.loads(json_text)
-                      response_validated = validate_response_partial(parsed_data)
-
-                      if response_validated[0]:
-                            print("====== GOAL ======")
-                            print(parsed_data.get("goal"), "\n" )
-                            print("====== OPTIONS ======\n")
-                            print(parsed_data.get("options"), "\n")
-                            print("====== NEXT STEPS ======\n")
-                            print(parsed_data.get("next_steps"), "\n")
-                            passed_tests.append(test_case['name'])
-                            test_status="passed"
-                            break
-                      
-                      else:
-                        attempt+=1
-                        logger.debug(f"Attempt {attempt} failed, validation error(s).")
-
-                        continue
-                      
-                  except json.JSONDecodeError as e:
-                        attempt+=1
-                        logger.debug(f"Attempt {attempt} failed, pharsing error.")
-
-                        continue
-
-            end_time=time.time()
-            duration=end_time-start_time #measuring time needed for model to respond
+            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(client, prompt, validate_response_partial)
             
-            if attempt == max_attempts:
+            if parsed_data:
+                  print(f"======={test_name}=======")
+                  print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
+                  print("====== OPTIONS ======\n",parsed_data.get("options"), "\n" )
+                  print("====== NEXT STEPS ======\n",parsed_data.get("next_steps"), "\n" ) 
 
-                  failed_tests.append(test_case['name'])
-                  test_status="failed"
-                  
-            logger.info(f"{test_case['name']} - {test_status}")
-            test_results.append({"name":test_case['name'],"status":test_status,"attempts":attempt,"errors":response_validated[1],"duration":duration})
-            logger.info(f"{test_case['name']} is finished.")
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data)
+            
+            if error_type:
+                  ERROR_COUNTS[error_type] += 1
 
-      evaluation(failed_tests, passed_tests)
-      save_results(mode, test_results)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
 
-def function_sumirize(mode):
+
+
+def function_summirize(mode):
+
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,client, input_based_on_mode=init_test_case(mode)
+
       for test_case in user_input_test:
-            logger.info(f"Test {test_case['name']} started.")
-            user_input=test_case["input"]
-            prompt=f"""{model_instructions["default"]} Now here is the input: {user_input}"""
-            max_attempts = 3
-            attempt = 0
-            print(f"\n ====== Running test ======\n {test_case['name']}\n")
-            start_time=time.time()
+            
+            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(client, prompt, validate_response_default)
+            
+            if parsed_data:
+                  print(f"======={test_name}=======")
+                  print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
 
-            while attempt < max_attempts:
-                        
-                        raw_response=call_model(prompt)
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data)
+            
+            if error_type:
+                  ERROR_COUNTS[error_type] += 1
 
-                        cleaner_status, json_text= clean_response(raw_response)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
 
-                        if cleaner_status == False:
-                              attempt+=1
-                              print(f'====== WARNING ======\n No JSON object found in model response. Attempt {attempt} failed.\n')
-                              logger.debug(f"Attempt {attempt} failed, no JSON object found")
 
-                              continue
-
-                        try:
-                                parsed_data=json.loads(json_text)
-                                response_validated= validate_response_default(parsed_data)
-
-                                if response_validated[0]:
-                                    print(f"====== Passed ======\n{test_case['name']}\n")
-                                    test_status="passed"
-                                    passed_tests.append(test_case['name'])
-                                    break
-                                
-                                else:
-                                    attempt+=1
-                                    logger.debug(f"Attempt {attempt} failed, validation error(s).")
-
-                                    continue
-
-                        except json.JSONDecodeError as e:
-                                
-                                attempt+=1
-                                logger.debug(f"Attempt {attempt} failed, parsing error.")
-
-                                continue
-                        
-            end_time=time.time()
-            duration=end_time-start_time #measuring time needed for model to respond
-
-            if attempt == max_attempts:
-                        failed_tests.append(test_case['name'])
-                        test_status="failed"
-
-            logger.info(f"{test_case['name']} - {test_status}")
-            test_results.append({"name":test_case['name'],"status":test_status,"attempts":attempt,"errors":response_validated[1],"duration":duration})
-            logger.info(f"{test_case['name']} is finished.")
-
-      evaluation(failed_tests, passed_tests)
-      save_results(mode, test_results)
 def function_rage(mode):
-       
+
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,client, input_based_on_mode=init_test_case(mode)
+
       for test_case in user_input_test:
-            logger.info(f"Test {test_case['name']} started.")
-            user_input=test_case["input"]
-            prompt=f"""{model_instructions["default"]} Now here is the input: {user_input}"""
-            max_attempts = 3
-            attempt = 0
-            print(f"\n ====== Running test {test_case['name']}======\n")
-            start_time=time.time()
+            
+            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(client, prompt, validate_response_default)
+            
+            if parsed_data:
+                  print(f"======={test_name}=======")
+                  print(f"======VALIDATION ERRORS======\n{validation_errors}")
+                  print(f"======DURATION======\n{duration} sec.")
 
-            while attempt < max_attempts:
-                        
-                        raw_response=call_model(prompt)
 
-                        cleaner_status, json_text= clean_response(raw_response)
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data)
+            
+            if error_type:
+                  ERROR_COUNTS[error_type] += 1
 
-                        if cleaner_status == False:
-                              attempt+=1
-                              print(f'====== WARNING ======\n No JSON object found in model response. Attempt {attempt} failed.\n')
-                              logger.debug(f"Attempt {attempt} failed, no JSON object found")
-                              continue
-
-                        try:
-                                parsed_data=json.loads(json_text)
-                                response_validated= validate_response_default(parsed_data)
-
-                                if response_validated[0]:
-                                    print(f"====== PASSED ======\n{test_case['name']}\n")
-                                    passed_tests.append(test_case['name'])
-                                    test_status="passed"
-                                    break
-                                
-                                else:
-                                    attempt+=1
-                                    logger.debug(f"Attempt {attempt} failed, validation error(s).")
-                                    print((f"====== ERROR ======\n For {test_case['name']} model returned following error(s): {response_validated[1]}\n"))
-                                    continue
-
-                        except json.JSONDecodeError as e:
-                              attempt+=1
-                              logger.debug(f"Attempt {attempt} failed, parsing error.")
-                              print(f"====== WARNING ======\n JSON parsing failed, Error: {e}. Attempt {attempt} failed.\n")
-                              continue
-                        
-            end_time=time.time()
-            duration=end_time-start_time #measuring time needed for model to respond
-            print(f"====== INFO ======\n Model response time was: {duration:.2f} seconds")
-
-            if attempt == max_attempts:
-                    
-                    print("====== ERROR ======\n Maximal number of retries reached.")
-                    print(f"====== WARNING ======\n Test {test_case['name']} failed.")
-                    failed_tests.append(test_case['name'])
-                    test_status="failed"
-                    
-            logger.info(f"{test_case['name']} - {test_status}")
-            test_results.append({"name":test_case['name'],"status":test_status,"attempts":attempt,"errors":response_validated[1],"duration":duration})
-            logger.info(f"{test_case['name']} is finished.")
-
-      evaluation(failed_tests, passed_tests)
-      save_results(mode,test_results)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
 
 def default_route(mode):
 
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,client, input_based_on_mode=init_test_case(mode)
+
       for test_case in user_input_test:
-
-            logger.info(f"Test {test_case['name']} started.") 
-            user_input=test_case["input"]
-            prompt=f"""{model_instructions["default"]} Now here is the input: {user_input}"""
-            max_attempts = 3
-            attempt = 0
-            print(f"\n ====== Running test ======\n {test_case['name']}\n")
-            start_time=time.time()
-
-            while attempt < max_attempts:
-                        
-                        raw_response=call_model(prompt)
-                        cleaner_status, json_text= clean_response(raw_response)
-                        if cleaner_status == False:
-                              attempt+=1
-                              print(f'====== WARNING ======\n No JSON object found in model response. Attempt {attempt} failed.\n')
-                              logger.debug(f"Attempt number {attempt} failed, no JSON object found")
-                              logger.error(f"Attempt number {attempt} failed, no JSON object found")
-                              continue
-
-                        try:
-                                parsed_data=json.loads(json_text)
-                                response_validated= validate_response_default(parsed_data)
-
-                                if response_validated[0]:
-                                    print("====== GOAL ======\n",parsed_data.get("goal"), "\n" ) #making sure accesability is achived
-                                    print("====== CONSTRAINS ======\n",parsed_data.get("constraints"), "\n")
-                                    print("====== OPTIONS ======\n: ", parsed_data.get("options"), "\n")
-                                    print("====== PROS AND CONS ======\n", parsed_data.get("pros_cons"), "\n")
-                                    print("====== PROS AND CONS ======\n", parsed_data.get("next_steps"), "\n")
-                                    print(parsed_data.get("cheer"), "\n")
-                                    passed_tests.append(test_case['name'])
-                                    test_status="passed"
-                                    break
-                                
-                                else:
-                                    logger.debug(f"Attempt {attempt} failed, validation error.")
-                                    logger.error(f"{test_case['name']} had following validation errors:{response_validated[1]}")
-                                    attempt+=1
-                                    continue
-
-                        except json.JSONDecodeError as e:
-                              logger.debug(f"Attempt {attempt} failed, parsing error.")
-                              logger.error(f"Parsing error: {e}, preview:{raw_response[:200]}")
-                              attempt+=1
-                              continue
-                        
-            end_time=time.time()
-            duration=end_time-start_time
-
-            if attempt == max_attempts:
-
-                    failed_tests.append(test_case['name'])
-                    logger.error(f"Max attempts ({attempt}) reached for {test_case['name']}")
-                    test_status="failed"
-
-            logger.info(f"{test_case['name']} - {test_status}")
-            test_results.append({"name":test_case['name'],"status":test_status,"attempts":attempt,"errors":response_validated[1],"duration":duration})
-            logger.info(f"{test_case['name']} is finished.")
+            
+            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(client, prompt, validate_response_default)
+            if parsed_data:
+                  print(f"======={test_name}=======")
+                  print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
+                  print("====== OPTIONS ======\n",parsed_data.get("options"), "\n" )
+                  print("====== LIMITATIONS ======\n",parsed_data.get("constraints"), "\n" )
+                  print("====== PROS AND CONS ======\n",parsed_data.get("pros_cons"), "\n" )
+                  print("====== NEXT STEPS ======\n",parsed_data.get("next_steps"), "\n" )
+                  print(parsed_data.get("cheer"), "\n" )
 
 
-      evaluation(failed_tests, passed_tests)
-      save_results(mode,test_results)
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data)
+            
+            if error_type:
+                  ERROR_COUNTS[error_type] += 1
+
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
 
 
 def route_mode(mode):
 
       handlers={
             "plan":function_plan,
-            "sumirize":function_sumirize,
+            "summirize":function_summirize,
             "rage":function_rage,
             "test":function_test,
             }

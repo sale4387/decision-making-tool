@@ -1,10 +1,7 @@
+from persistence import retrieve_session
 
-import argparse
+session_history=retrieve_session()
 
-parser = argparse.ArgumentParser()
-parser.add_argument("-m", "--mode",)
-
-args = parser.parse_args()
-mode = args.mode
-
-print(mode)
+print("last 5 lines:")
+for line in session_history:
+    print(f"Id: {line["id"]} - Timestamp:{line["timestamp"]}\n")

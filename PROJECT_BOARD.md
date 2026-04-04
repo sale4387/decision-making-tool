@@ -2,23 +2,296 @@
 
 ## Backlog
 
-TASK-007 – Local memory and weekly summaries
-Store previous sessions and generate summaries.
+## TASK-008 – Retrieval Augmented Generation (RAG)
 
-TASK-008 – Retrieval Augmented Generation (RAG)
-Retrieve relevant previous notes before sending prompts.
+Goal
+Enhance model responses by retrieving relevant past data and injecting it into prompts.
 
-TASK-009 – Speech-to-text input
-Allow voice input using a local speech model.
+Problem
+Currently the model only sees the current input.
+Real AI systems improve responses by using relevant past context.
 
-TASK-010 – Packaging the tool
-Make the tool installable and runnable easily.
+Acceptance Criteria
 
-TASK-012 – Prompt template system
-Create reusable prompt templates for different modes such as plan, summarize, and rage.
+- System retrieves relevant past entries from memory
+- Retrieved context is injected into prompt before model call
+- Retrieval logic is simple (e.g., keyword match or recent items)
+- Works with existing template system
+- No external vector DB or embeddings (keep simple)
+- Behavior improves or changes based on past context
 
-TASK-020 – Model abstraction layer
-Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other providers.
+Learning Objective
+
+- Understand RAG concept (retrieve + augment + generate)
+- Learn how to enrich prompts with context
+- Practice simple retrieval strategies
+- Build foundation for advanced AI systems
+
+Subtasks
+
+[ ] Subtask 1 – Load memory
+Reuse memory loader from TASK-007.
+
+[ ] Subtask 2 – Select relevant entries
+Implement simple retrieval (keyword or recent N).
+
+[ ] Subtask 3 – Format context
+Convert retrieved entries into prompt-friendly text.
+
+[ ] Subtask 4 – Inject into prompt
+Add context before user input in template.
+
+[ ] Subtask 5 – Test behavior
+Verify responses change based on past data.
+
+[ ] Subtask 6 – Keep system simple
+Avoid overengineering (no embeddings, no DB).
+
+References
+
+RAG concept
+https://huggingface.co/docs/transformers/main/en/tasks/rag
+
+## TASK-009 – Speech-to-Text Input
+
+Goal
+Allow user to provide input via voice using a local speech-to-text model.
+
+Problem
+Currently input is text-only.
+Adding speech improves usability but is not core system logic.
+
+Acceptance Criteria
+
+- User can record or input audio
+- Audio is converted to text locally
+- Converted text is used as standard input
+- Works with existing pipeline (no changes to core logic)
+- Uses lightweight/local model (no heavy infra)
+
+Learning Objective
+
+- Understand speech-to-text basics
+- Learn how to integrate external tools into pipeline
+- Practice handling different input types
+
+Subtasks
+
+[ ] Subtask 1 – Choose library
+Select simple STT tool (e.g., Whisper local).
+
+[ ] Subtask 2 – Capture audio
+Allow recording or file input.
+
+[ ] Subtask 3 – Convert to text
+Run speech model and get transcript.
+
+[ ] Subtask 4 – Integrate
+Feed transcript into existing flow.
+
+[ ] Subtask 5 – Test
+Verify accuracy and usability.
+
+References
+
+OpenAI Whisper
+https://github.com/openai/whisper
+
+## TASK-010 – Packaging the Tool
+
+Goal
+Make the tool easy to install and run as a reusable application.
+
+Problem
+Currently the tool runs only via direct script execution.
+Real tools are packaged for reuse and distribution.
+
+Acceptance Criteria
+
+- Project can be installed locally (e.g., pip install -e .)
+- Entry point defined (e.g., CLI command)
+- Dependencies managed via requirements or pyproject
+- Clear run command (no manual path issues)
+- Project structure clean and reusable
+
+Learning Objective
+
+- Understand Python packaging basics
+- Learn how to structure projects properly
+- Prepare tool for real-world usage
+
+Subtasks
+
+[ ] Subtask 1 – Define structure
+Ensure proper folders and modules.
+
+[ ] Subtask 2 – Add requirements
+List dependencies.
+
+[ ] Subtask 3 – Create entry point
+Define CLI command.
+
+[ ] Subtask 4 – Test install
+Install locally and run.
+
+[ ] Subtask 5 – Verify usability
+Ensure tool runs without manual setup.
+
+References
+
+Python packaging
+https://packaging.python.org/en/latest/tutorials/packaging-projects/
+
+## TASK-023 – Basic UI (Streamlit)
+
+Goal
+Provide a minimal user interface to interact with the system and demonstrate its capabilities.
+
+Problem
+Currently the system is CLI-only, which makes it harder to demo, explain, and use interactively.
+A simple UI improves usability and presentation without adding unnecessary complexity.
+
+Acceptance Criteria
+
+- UI allows user to input text
+- UI triggers model pipeline (same as CLI)
+- UI displays structured output clearly
+- UI integrates with existing system (no duplicated logic)
+- Runs locally with a single command
+- No complex frontend (use simple framework)
+
+Learning Objective
+
+- Understand how to expose backend systems via UI
+- Learn basic integration between UI and logic layer
+- Practice keeping UI thin (no business logic inside UI)
+- Improve project presentation for demos/interviews
+
+Subtasks
+
+[ ] Subtask 1 – Choose framework
+Use Streamlit (simple, fast, Python-based).
+
+[ ] Subtask 2 – Create UI file
+Create `ui.py` (or similar entry point).
+
+[ ] Subtask 3 – Add input field
+Allow user to enter text (textarea or input box).
+
+[ ] Subtask 4 – Trigger pipeline
+Call existing logic (do NOT duplicate code).
+
+[ ] Subtask 5 – Display output
+Show model response in readable format.
+
+[ ] Subtask 6 – Run and test
+Ensure UI runs with single command and works end-to-end.
+
+References
+
+Streamlit docs
+https://docs.streamlit.io/
+
+## TASK-024 – Metrics & Decision Scoring Layer
+
+Goal
+Introduce structured metrics and basic decision scoring to evaluate system performance and improve output usefulness.
+
+Problem
+Currently the system generates structured outputs but lacks measurement and decision quality signals.
+Without metrics, it is difficult to assess performance, compare runs, or improve the system.
+
+Acceptance Criteria
+
+- System tracks key metrics:
+  - success rate per category
+  - average attempts per test
+  - error distribution (MODEL, CLEANER, PARSE, VALIDATION)
+  - latency per test
+
+- Metrics are aggregated and logged at end of run
+- Each result includes optional scoring (e.g., ranking or simple score per option)
+- Output includes a version field (e.g., `"version": "v1"`)
+- No external tools (keep within current structure)
+
+Learning Objective
+
+- Understand evaluation and measurement in AI systems
+- Learn how to quantify system performance
+- Practice adding lightweight scoring logic
+- Improve system credibility for real-world use
+
+Subtasks
+
+[ ] Subtask 1 – Extend result structure
+Add fields for latency, attempts, errors, and version.
+
+[ ] Subtask 2 – Aggregate metrics
+Compute summary statistics across all tests.
+
+[ ] Subtask 3 – Log metrics
+Display aggregated results clearly at end of run.
+
+[ ] Subtask 4 – Add simple scoring
+Rank or score options based on constraints (basic logic only).
+
+[ ] Subtask 5 – Validate integration
+Ensure metrics do not break existing pipeline.
+
+References
+
+Python statistics
+https://docs.python.org/3/library/statistics.html
+
+## TASK-025 – Multi-Model Support & Experimentation
+
+Goal
+Enable the system to run with multiple model providers and compare their outputs.
+
+Problem
+Currently the system supports only one active model at a time.
+Real AI systems often compare models, switch providers, and implement fallback strategies.
+
+Acceptance Criteria
+
+- System supports multiple providers (e.g., HuggingFace + another provider)
+- Models can be switched via config or CLI
+- Ability to run same input across multiple models
+- Outputs from different models can be compared
+- Optional fallback if primary model fails
+- CLI logic remains unchanged when adding new providers
+
+Learning Objective
+
+- Understand multi-model architecture
+- Learn how to compare model behavior
+- Practice building flexible and extensible systems
+- Prepare for real-world AI experimentation
+
+Subtasks
+
+[ ] Subtask 1 – Add new provider
+Implement second client (e.g., OpenAI or alternative).
+
+[ ] Subtask 2 – Extend provider mapping
+Add new provider to existing mapping structure.
+
+[ ] Subtask 3 – Enable switching
+Allow selecting provider via config or CLI.
+
+[ ] Subtask 4 – Add experiment mode
+Run same input through multiple models.
+
+[ ] Subtask 5 – Compare outputs
+Display or log differences between models.
+
+[ ] Subtask 6 – Implement fallback
+If primary model fails, call secondary model.
+
+References
+
+Multi-model systems concept
+https://platform.openai.com/docs/guides/production-best-practices
 
 ---
 
@@ -35,62 +308,6 @@ Create a wrapper allowing easy switching between HuggingFace, OpenAI, and other 
 ---
 
 ## Blocked
-
-TASK-016 – Evaluation dataset expansion
-
-Goal  
-Create a larger and more structured evaluation dataset to systematically test model behavior, prompt quality, and system reliability.
-
-Problem  
-Current evaluation dataset is small and limited.  
-It does not cover enough variation in real-world scenarios, making it difficult to assess model consistency, edge cases, and failure patterns.  
-Without a richer dataset, evaluation results are not reliable or representative.
-
-Acceptance Criteria
-
-- Dataset contains at least 15–25 test cases
-- Test cases cover different categories (e.g., career, finance, personal decisions, ambiguity, edge cases)
-- Each test case has:
-  - name
-  - input text
-- Dataset remains easy to extend (simple structure, no hardcoding in logic)
-- Evaluation runs without modification to existing pipeline
-- New dataset improves visibility of failures and inconsistencies
-
-Learning Objective
-
-- Learn how to design evaluation datasets for AI systems
-- Understand importance of coverage and edge cases
-- Practice thinking in terms of test scenarios instead of single inputs
-- Improve ability to benchmark and compare model behavior
-
-Subtasks
-
-[x] Subtask 1 – Analyze current dataset  
-Review existing test cases and identify missing categories or weaknesses.
-
-[x] Subtask 2 – Define dataset categories  
-Define 4–6 categories (e.g., simple, complex, ambiguous, edge cases, emotional, practical).
-
-[x] Subtask 3 – Create additional test cases  
-Add new test cases to reach at least 15–25 total.
-
-[x] Subtask 4 – Ensure consistent structure  
-Verify all test cases follow same schema (name + input + category).
-
-[ ] Subtask 5 – Run evaluation with expanded dataset  
-Execute tests and observe differences in pass/fail rates.
-
-[ ] Subtask 6 – Document findings  
-Summarize what types of inputs fail or degrade model performance.
-
-References
-
-Prompt evaluation best practices  
-https://platform.openai.com/docs/guides/evals
-
-Dataset design basics  
-https://developers.google.com/machine-learning/data-prep/construct/sampling-splitting
 
 ---
 
@@ -879,5 +1096,290 @@ Observability concepts
 https://martinfowler.com/articles/observability.html
 
 ---
+
+TASK-020 – Model abstraction layer
+
+Goal  
+Introduce a model abstraction layer so the system can switch between different model providers (e.g., HuggingFace, OpenAI) without changing application logic.
+
+Problem  
+Currently the model call is tightly coupled to a specific provider (HuggingFace) inside the code.  
+This makes it difficult to switch models, compare providers, or extend the system.  
+Real AI systems use abstraction layers to decouple application logic from model providers.
+
+Acceptance Criteria
+
+- Model interaction is accessed through a single interface (e.g., ModelClient)
+- CLI and application logic do not directly depend on HuggingFace or any provider
+- At least one provider implementation exists (HuggingFace)
+- System behavior remains unchanged after refactor
+- Model provider and model name are configurable via config
+- Code structure allows easy addition of new providers later
+
+Learning Objective
+
+- Understand abstraction and interface design
+- Learn how to decouple external dependencies from core logic
+- Practice designing extensible architecture
+- Prepare system for multi-model experimentation and comparison
+
+Subtasks
+
+[x] Subtask 1 – Create ModelClient interface  
+Define a class in `model.py` that exposes a single method (e.g., `generate(prompt)`).
+
+[x] Subtask 2 – Move HuggingFace logic into implementation  
+Wrap existing HuggingFace call inside ModelClient (or a dedicated class).
+
+[x] Subtask 3 – Replace direct model calls  
+Update `cli.py` to use ModelClient instead of `call_model()`.
+
+[x] Subtask 4 – Add provider configuration  
+Use config to define provider and model name.
+
+[x] Subtask 5 – Verify behavior  
+Run system and confirm output and logging remain unchanged.
+
+[x] Subtask 6 – Prepare for extension  
+Ensure structure allows adding new providers without modifying CLI logic.
+
+References
+
+Python classes and OOP  
+https://docs.python.org/3/tutorial/classes.html
+
+Designing abstractions  
+https://refactoring.guru/design-patterns/adapter/python/example
+
+---
+
+TASK-016 – Evaluation dataset expansion
+
+Goal  
+Create a larger and more structured evaluation dataset to systematically test model behavior, prompt quality, and system reliability.
+
+Problem  
+Current evaluation dataset is small and limited.  
+It does not cover enough variation in real-world scenarios, making it difficult to assess model consistency, edge cases, and failure patterns.  
+Without a richer dataset, evaluation results are not reliable or representative.
+
+Acceptance Criteria
+
+- Dataset contains at least 15–25 test cases
+- Test cases cover different categories (e.g., career, finance, personal decisions, ambiguity, edge cases)
+- Each test case has:
+  - name
+  - input text
+- Dataset remains easy to extend (simple structure, no hardcoding in logic)
+- Evaluation runs without modification to existing pipeline
+- New dataset improves visibility of failures and inconsistencies
+
+Learning Objective
+
+- Learn how to design evaluation datasets for AI systems
+- Understand importance of coverage and edge cases
+- Practice thinking in terms of test scenarios instead of single inputs
+- Improve ability to benchmark and compare model behavior
+
+Subtasks
+
+[x] Subtask 1 – Analyze current dataset  
+Review existing test cases and identify missing categories or weaknesses.
+
+[x] Subtask 2 – Define dataset categories  
+Define 4–6 categories (e.g., simple, complex, ambiguous, edge cases, emotional, practical).
+
+[x] Subtask 3 – Create additional test cases  
+Add new test cases to reach at least 15–25 total.
+
+[x] Subtask 4 – Ensure consistent structure  
+Verify all test cases follow same schema (name + input + category).
+
+[x] Subtask 5 – Run evaluation with expanded dataset  
+Execute tests and observe differences in pass/fail rates.
+
+[x] Subtask 6 – Document findings  
+Summarize what types of inputs fail or degrade model performance.
+
+References
+
+Prompt evaluation best practices  
+https://platform.openai.com/docs/guides/evals
+
+Dataset design basics  
+https://developers.google.com/machine-learning/data-prep/construct/sampling-splitting
+
+---
+
+## TASK-012 – Prompt Template System
+
+Goal
+Introduce a prompt template system so prompts are reusable, structured, and easily adjustable without changing code.
+
+Problem
+Currently prompts are hardcoded inside the application logic.
+This makes iteration slow, testing difficult, and mixing logic with prompt design.
+Real AI systems separate prompt design from code to allow fast experimentation.
+
+Acceptance Criteria
+
+- Prompts are stored as external template files (e.g., in `templates/` folder)
+- Application loads templates dynamically based on mode
+- User input is injected into templates via placeholders (e.g., `{user_input}`)
+- CLI and core logic do not contain hardcoded prompts
+- Switching templates changes model behavior without code changes
+- System behavior remains unchanged after refactor
+
+Learning Objective
+
+- Understand separation of concerns (logic vs prompt design)
+- Learn how to externalize dynamic content using templates
+- Practice building flexible input pipelines for AI systems
+- Enable fast iteration and testing of prompts
+
+Subtasks
+
+[x] Subtask 1 – Create templates folder
+Create `templates/` directory and add basic templates (e.g., `plan.txt`, `summarize.txt`, `rage.txt`).
+
+[x] Subtask 2 – Define template structure
+Add placeholders (e.g., `{user_input}`) inside templates for dynamic content.
+
+[x] Subtask 3 – Load template in code
+Implement logic to read template file based on selected mode.
+
+[x] Subtask 4 – Inject user input
+Replace placeholders with actual input before sending to model.
+
+[x] Subtask 5 – Replace hardcoded prompts
+Remove existing inline prompt strings and use templates instead.
+
+[x] Subtask 6 – Verify behavior
+Run system and confirm outputs remain consistent and templates control behavior.
+
+References
+
+Python file handling
+https://docs.python.org/3/tutorial/inputoutput.html#reading-and-writing-files
+
+String formatting
+https://docs.python.org/3/library/string.html#formatstrings
+
+---
+
+## TASK-007 – Local Memory and Weekly Summaries
+
+Goal
+Introduce local memory so the system can store previous sessions and generate summaries over time.
+
+Problem
+Currently the system is stateless. Each run starts fresh with no awareness of previous interactions.
+Real AI systems persist data to enable continuity, tracking, and improvement.
+
+Acceptance Criteria
+
+- System stores results of each run locally (e.g., JSON file)
+- Each entry includes at least: input, output, timestamp, and mode
+- System can load past sessions
+- Ability to generate a simple summary of recent sessions (e.g., last N entries)
+- No external database (local file only)
+- Existing functionality remains unchanged
+
+Learning Objective
+
+- Understand persistence and state management
+- Learn how to store and retrieve structured data
+- Practice building simple memory systems
+- Prepare foundation for retrieval (RAG)
+
+Subtasks
+
+[x] Subtask 1 – Design memory structure
+Define JSON structure for storing sessions.
+
+[x] Subtask 2 – Save results
+After each run, append results to memory file.
+
+[x] Subtask 3 – Load memory
+Implement function to read stored sessions.
+
+[x] Subtask 4 – Implement summary
+Create simple summary (e.g., last 5 entries).
+
+[x] Subtask 5 – Integrate into CLI
+Allow triggering summary mode or use in pipeline.
+
+[x] Subtask 6 – Verify behavior
+Ensure memory persists across runs and summaries work.
+
+References
+
+Python JSON handling
+https://docs.python.org/3/library/json.html
+
+---
+
+## TASK-026 – Refactor Router Functions and Core Logic
+
+Goal
+Refactor duplicated logic across router functions by extracting shared behavior into reusable components while keeping mode-specific behavior separate.
+
+Problem
+Current implementation contains significant duplication across route functions (test, plan, summarize, rage, default).
+Core logic such as retry handling, model calls, validation, and timing is repeated multiple times, making the code harder to maintain and extend.
+
+Acceptance Criteria
+
+- Core logic (retry, model call, cleaning, parsing, validation) is extracted into a single reusable function
+- Route functions no longer duplicate core logic
+- Mode-specific behavior (printing, logging, formatting output) remains separate
+- No `if mode == ...` branching inside core logic
+- System behavior remains unchanged after refactor
+- Code becomes shorter, cleaner, and easier to extend
+
+Learning Objective
+
+- Understand separation of concerns
+- Learn how to refactor duplicated code safely
+- Practice designing reusable functions
+- Improve code maintainability and readability
+
+Subtasks
+
+[x] Subtask 1 – Identify duplicated logic
+Locate repeated blocks across all route functions.
+
+[x] Subtask 2 – Extract core function
+Create a function (e.g., `run_test_case`) handling:
+
+- retry logic
+- model call
+- cleaning
+- parsing
+- validation
+- timing
+
+[x] Subtask 3 – Define return structure
+Ensure core function returns structured data:
+
+- status
+- parsed output
+- errors
+- duration
+- attempts
+
+[x] Subtask 4 – Update route functions
+Replace duplicated logic with calls to the core function.
+
+[x] Subtask 5 – Keep presentation separate
+Ensure each mode handles its own printing/logging without modifying core logic.
+
+[x] Subtask 6 – Verify behavior
+Run all modes and confirm outputs and logs remain unchanged.
+
+References
+
+Refactoring principles
+https://refactoring.guru/refactoring
 
 ---

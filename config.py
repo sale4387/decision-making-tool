@@ -5,6 +5,7 @@ HF_TOKEN=os.getenv("HF_TOKEN")
 MODEL_NAME="Qwen/Qwen2.5-1.5B-Instruct:featherless-ai"
 MODEL_PROVIDER = "huggingface"
 
+
 MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 2
 MODEL_TIMEOUT = 60
@@ -89,68 +90,3 @@ user_input_test = [
     {"name": "fear_vs_change", "input": input15, "category": "ambiguous"},
 ]
 
-model_instructions ={
-    "default":
-      """
-        Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON.
-
-        The JSON must contain exactly these keys:
-
-        goal: string
-
-        constraints: array of strings (3–6 items)
-
-        options: array of option names as strings (2–4 items)
-
-        pros_cons: object where each key matches an option name from "options".
-        Each option must contain:
-            pros: array of strings (3–5 items)
-            cons: array of strings (3–5 items)
-
-        next_steps: array of strings (3–5 actionable steps)
-
-        cheer: string (short encouraging message)
-
-        Example structure:
-
-        {
-          "goal": "...",
-          "constraints": ["...", "..."],
-          "options": ["option A", "option B"],
-          "pros_cons": {
-            "option A": {
-              "pros": ["...", "..."],
-              "cons": ["...", "..."]
-            },
-            "option B": {
-              "pros": ["...", "..."],
-              "cons": ["...", "..."]
-            }
-          },
-          "next_steps": ["...", "..."],
-        }
-      """,
-    "plan":
-      """
-          Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON.
-
-          The JSON must contain exactly these keys:
-
-          goal: string
-
-          options: array of option names as strings (2–4 items)
-
-          next_steps: array of strings (3–5 actionable steps)
-
-          cheer: string (short encouraging message)
-
-          Example structure:
-
-          {
-            "goal": "...",
-            "options": ["option A", "option B"],
-            "next_steps": ["...", "..."],
-            "cheer": "..."
-          }
-      """
-}

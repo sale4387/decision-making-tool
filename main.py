@@ -1,8 +1,8 @@
 
 from dotenv import load_dotenv
 load_dotenv()
+from cli import get_cli_args, route_mode, is_valid_log_level, default_route
 import logger, logging
-from cli import get_cli_args, route_mode, default_route, is_valid_log_level
 from config import LOG_LEVEL
 
 logger = logging.getLogger(__name__)
@@ -31,7 +31,7 @@ def main():
             logger.error(f"Wrong mode was selected: {mode}")
             exit(1)
     else:
-        default_route()
+        default_route(mode)
 
 if __name__ == "__main__":
      print("\n========== TEST START ============")
