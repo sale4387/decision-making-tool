@@ -1,8 +1,8 @@
 import json
 import os
-from config import user_input_test, ALLOWED_CATEGORIES, MODEL_PROVIDER
+from config import user_input_test, ALLOWED_CATEGORIES, PRIMARY_MODEL_PROVIDER,SECONDARY_MODEL_PROVIDER, MODEL_MAP
 import time
-from model import HFClient
+from model import HFClient, GEMINIClient
 from validation import validate_test_cases
 import logging
 from persistence import save_results, save_session, retrieve_session
@@ -11,8 +11,10 @@ from cleaner import clean_response
 
 
 logger=logging.getLogger(__name__)
+
 PROVIDER_MAP={
-      "huggingface":HFClient
+      "huggingface":HFClient,
+      "google":GEMINIClient
 }
 
 def get_mode_input(mode):
@@ -37,17 +39,22 @@ def init_test_case(mode):
       }
 
       validate_test_cases(user_input_test, ALLOWED_CATEGORIES)
-      
-      client_class = PROVIDER_MAP.get(MODEL_PROVIDER)
 
-      if client_class is None:
+      primary_model_name=MODEL_MAP[PRIMARY_MODEL_PROVIDER]
+      primary_client_class = PROVIDER_MAP.get(PRIMARY_MODEL_PROVIDER)
+      secondary_model_name=MODEL_MAP[SECONDARY_MODEL_PROVIDER]
+      secondary_client_class = PROVIDER_MAP.get(SECONDARY_MODEL_PROVIDER)
+
+      if primary_client_class is None or secondary_client_class is None:
             logger.error(f"Wrong provider selected")
             exit(1)
-      client= client_class()
+      primary_client= primary_client_class(primary_model_name)
+      secondary_client= secondary_client_class(secondary_model_name)
+
+      
       input_based_on_mode =get_mode_input(mode)
 
-      return failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,client, input_based_on_mode
-
+      return failed_tests, passed_tests, test_results,session, category_results,ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode
 def run_test_case(client, prompt, validation_function):
       
       start_time=time.time()
@@ -77,8 +84,8 @@ def run_test_case(client, prompt, validation_function):
                               continue
                         try:
                               parsed_data=json.loads(json_text)
-                              response_validated= validation_function(parsed_data)
-                              if response_validated[0]:
+                              validation_passed, validation_errors= validation_function(parsed_data)
+                              if validation_passed:
                                     test_status="passed"
                                     error_type=None
                                     break
@@ -86,7 +93,6 @@ def run_test_case(client, prompt, validation_function):
                                     attempt+=1
                                     logger.debug(f"Attempt {attempt} failed, validation error(s).")
                                     error_type="VALIDATION_ERROR"
-                                    validation_errors=response_validated[1]
                                     continue
                         except json.JSONDecodeError:
                                 attempt+=1
@@ -99,7 +105,7 @@ def run_test_case(client, prompt, validation_function):
 
       return test_status, parsed_data, duration, error_type, attempt, validation_errors
 
-def process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data):
+def process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data, provider):
       
       logger.info(f"{test_name} - {test_status}")
 
@@ -114,8 +120,8 @@ def process_test_results(test_name, test_status, test_case, category_results, pa
             category_results[cat]["failed"] += 1
             failed_tests.append(test_name)
 
-      test_results.append({"name":test_name,"status":test_status,"attempts":attempt,"error_type":error_type,"errors":validation_errors,"duration":duration})
-      session.append({"name":test_name,"mode":mode,"input":user_input, "output":parsed_data})
+      test_results.append({"name":test_name,"status":test_status,"attempts":attempt,"error_type":error_type,"errors":validation_errors,"duration":duration,"provider":provider})
+      session.append({"name":test_name,"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
       logger.info(f"{test_name} is finished.")
 
 def finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session):

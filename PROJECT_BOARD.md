@@ -2,8 +2,6 @@
 
 ## Backlog
 
-## TASK-008 – Retrieval Augmented Generation (RAG)
-
 Goal
 Enhance model responses by retrieving relevant past data and injecting it into prompts.
 
@@ -242,56 +240,6 @@ References
 
 Python statistics
 https://docs.python.org/3/library/statistics.html
-
-## TASK-025 – Multi-Model Support & Experimentation
-
-Goal
-Enable the system to run with multiple model providers and compare their outputs.
-
-Problem
-Currently the system supports only one active model at a time.
-Real AI systems often compare models, switch providers, and implement fallback strategies.
-
-Acceptance Criteria
-
-- System supports multiple providers (e.g., HuggingFace + another provider)
-- Models can be switched via config or CLI
-- Ability to run same input across multiple models
-- Outputs from different models can be compared
-- Optional fallback if primary model fails
-- CLI logic remains unchanged when adding new providers
-
-Learning Objective
-
-- Understand multi-model architecture
-- Learn how to compare model behavior
-- Practice building flexible and extensible systems
-- Prepare for real-world AI experimentation
-
-Subtasks
-
-[ ] Subtask 1 – Add new provider
-Implement second client (e.g., OpenAI or alternative).
-
-[ ] Subtask 2 – Extend provider mapping
-Add new provider to existing mapping structure.
-
-[ ] Subtask 3 – Enable switching
-Allow selecting provider via config or CLI.
-
-[ ] Subtask 4 – Add experiment mode
-Run same input through multiple models.
-
-[ ] Subtask 5 – Compare outputs
-Display or log differences between models.
-
-[ ] Subtask 6 – Implement fallback
-If primary model fails, call secondary model.
-
-References
-
-Multi-model systems concept
-https://platform.openai.com/docs/guides/production-best-practices
 
 ---
 
@@ -1381,5 +1329,57 @@ References
 
 Refactoring principles
 https://refactoring.guru/refactoring
+
+---
+
+## TASK-025 – Multi-Model Support & Experimentation
+
+Goal
+Enable the system to run with multiple model providers and compare their outputs.
+
+Problem
+Currently the system supports only one active model at a time.
+Real AI systems often compare models, switch providers, and implement fallback strategies.
+
+Acceptance Criteria
+
+- System supports multiple providers (e.g., HuggingFace + another provider)
+- Models can be switched via config or CLI
+- Ability to run same input across multiple models
+- Outputs from different models can be compared
+- Optional fallback if primary model fails
+- CLI logic remains unchanged when adding new providers
+
+Learning Objective
+
+- Understand multi-model architecture
+- Learn how to compare model behavior
+- Practice building flexible and extensible systems
+- Prepare for real-world AI experimentation
+
+Subtasks
+
+[x] Subtask 1 – Add new provider
+Implement second client (e.g., OpenAI or alternative).
+
+[x] Subtask 2 – Extend provider mapping
+Add new provider to existing mapping structure.
+
+[x] Subtask 3 – Enable switching
+Allow selecting provider via config or CLI.
+
+[x] Subtask 4 – Add experiment mode
+Run same input through multiple models.
+
+[x] Subtask 5 – Compare outputs
+Display or log differences between models.
+
+[x] Subtask 6 – Implement fallback
+If primary model fails, call secondary model.
+
+References
+
+Multi-model systems concept
+https://platform.openai.com/docs/guides/production-best-practices
 
 ---

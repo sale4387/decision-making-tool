@@ -7,7 +7,8 @@ def validate_response_default(parsed_data):
     for key in required_keys["default"]:
         if key not in parsed_data:
             error_log_message.append(f"A key is missing from parsed data.\n")
-            return False
+            return False, error_log_message
+
 
     if not min(validation_rules["constraints"]) <= len(parsed_data["constraints"]) <= max(validation_rules["constraints"]):
              error_log_message.append(f"Number of constraints is wrong.\n")
@@ -33,45 +34,44 @@ def validate_response_default(parsed_data):
           error_log_message.append(f"Option set not matching Pros and Cons keys.")
 
     if error_log_message:
-          return [False, error_log_message]
+          return False, error_log_message
     
     else:
-          return [True, error_log_message]
+          return True, error_log_message
     
 def validate_response_partial(parsed_data):
 
       error_log_message=[]
 
-      for key in parsed_data:
-
-            if key not in required_keys["plan"]:
+      for key in required_keys["plan"]:
+            if key not in parsed_data:
                   error_log_message.append(f"A key is missing from parsed data.\n")
-                  return False
+                  return False, error_log_message
 
-            if not min(validation_rules["options"]) <= len(parsed_data["options"]) <= max(validation_rules["options"]):
-             error_log_message.append(f"Number of options is wrong.\n")
+      if not min(validation_rules["options"]) <= len(parsed_data["options"]) <= max(validation_rules["options"]):
+            error_log_message.append(f"Number of options is wrong.\n")
 
-            if not min(validation_rules["next_steps"]) <= len(parsed_data["next_steps"]) <= max(validation_rules["next_steps"]):
-             error_log_message.append(f"Number of next steps is wrong.\n")
+      if not min(validation_rules["next_steps"]) <= len(parsed_data["next_steps"]) <= max(validation_rules["next_steps"]):
+            error_log_message.append(f"Number of next steps is wrong.\n")
 
       if error_log_message:
-            return [False, error_log_message]
+            return False, error_log_message
       
       else:
-            return[True, error_log_message]
+            return True, error_log_message
       
 def validate_response_minimal(parsed_data):
 
       error_log_message=[]
 
-      for key in parsed_data:
+      for key in required_keys["plan"]:
 
-            if key not in required_keys["plan"]:
+            if key not in parsed_data:
                   error_log_message.append(f"A key is missing from parsed data.\n")
-                  return [False, error_log_message]
+                  return False, error_log_message
 
-            else:
-                  return[True, error_log_message]
+      
+      return True, error_log_message
             
 def validate_test_cases(test_cases, allowed_categories):
     for test_case in test_cases:

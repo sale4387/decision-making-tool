@@ -1,6 +1,10 @@
 import json
 import time
 import uuid
+import logging
+
+logger=logging.getLogger(__name__)
+
 
 
 def save_results(test_results, mode):
@@ -18,7 +22,7 @@ def save_results(test_results, mode):
         try:
             file.write(serialized_record + "\n")
         except  Exception as e:
-            print(f"Persistence failed: {e}")
+            logger.error(f"Persistence failed: {e}")
 
 def save_session(session):
     session_id = str(uuid.uuid4())
@@ -34,7 +38,7 @@ def save_session(session):
         try:
             file.write(serialized_record + "\n")
         except  Exception as e:
-            print(f"Saving session failed: {e}")
+            logger.error(f"Saving session failed: {e}")
 
 def retrieve_session():
 
@@ -47,6 +51,6 @@ def retrieve_session():
                     last_5_lines.append(single_line)
                 return last_5_lines    
         except Exception as e:
-            print(f"Retrieving session failed: {e}")
+            logger.error(f"Retrieving session failed: {e}")
             return []
     

@@ -31,7 +31,7 @@ def main():
             logger.error(f"Wrong mode was selected: {mode}")
             exit(1)
     else:
-        default_route(mode)
+        default_route("default")
 
 if __name__ == "__main__":
      print("\n========== TEST START ============")

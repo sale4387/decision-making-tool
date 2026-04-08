@@ -2,9 +2,14 @@ import os
 
 
 HF_TOKEN=os.getenv("HF_TOKEN")
-MODEL_NAME="Qwen/Qwen2.5-1.5B-Instruct:featherless-ai"
-MODEL_PROVIDER = "huggingface"
+PRIMARY_MODEL_PROVIDER = "huggingface"
+SECONDARY_MODEL_PROVIDER = "google"
 
+
+MODEL_MAP={
+    "huggingface":"Qwen/Qwen2.5-1.5B-Instruct:featherless-ai",
+    "google":"gemini-3.1-flash-lite-preview"
+}
 
 MAX_RETRIES = 3
 RETRY_DELAY_SECONDS = 2
@@ -37,12 +42,12 @@ required_keys ={
       ]
 }
 
-validation_rules={
- "constraints":(3,6),  
- "options": (2,4),
- "pros":(3,5),
- "cons":(3,5),
- "next_steps":(3,5)
+validation_rules = {
+    "constraints": (1,4),
+    "options": (2,5),
+    "pros": (1,5),
+    "cons": (1,5),
+    "next_steps": (2,6)
 }
 
 
