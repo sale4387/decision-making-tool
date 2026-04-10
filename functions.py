@@ -29,7 +29,7 @@ def init_test_case(mode):
       failed_tests=[]
       passed_tests=[]
       test_results=[]
-      session=[]
+      session={}
       category_results = {}
       ERROR_COUNTS = {
       "MODEL_ERROR": 0,
@@ -55,6 +55,7 @@ def init_test_case(mode):
       input_based_on_mode =get_mode_input(mode)
 
       return failed_tests, passed_tests, test_results,session, category_results,ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode
+
 def run_test_case(client, prompt, validation_function):
       
       start_time=time.time()
@@ -121,7 +122,7 @@ def process_test_results(test_name, test_status, test_case, category_results, pa
             failed_tests.append(test_name)
 
       test_results.append({"name":test_name,"status":test_status,"attempts":attempt,"error_type":error_type,"errors":validation_errors,"duration":duration,"provider":provider})
-      session.append({"name":test_name,"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
+      session.update({"name":test_name,"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
       logger.info(f"{test_name} is finished.")
 
 def finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session):
@@ -145,6 +146,17 @@ def prepare_test_case(test_case, input_based_on_mode):
             test_name= test_case["name"]
             logger.info(f"Test {test_case['name']} started.")
             user_input=test_case["input"]
-            prompt=input_based_on_mode.replace("{user_input}", user_input)
 
+            session_history=retrieve_session()
+
+            previous_inputs = []
+            previous_outputs = []
+
+            for session in session_history:
+                  previous_inputs.append(session.get("results", {}).get("input", ""))
+                  previous_outputs.append(session.get("results", {}).get("output", ""))
+            previous_inputs_text = "Previous inputs:\n" + "\n".join(previous_inputs)            
+            previous_outputs_text = "\n".join([json.dumps(o) for o in previous_outputs])
+
+            prompt=input_based_on_mode.replace("{user_input}", user_input).replace("{previous_inputs}",previous_inputs_text).replace("{previous_responses}", previous_outputs_text)
             return test_name, user_input, prompt

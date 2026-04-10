@@ -224,21 +224,88 @@ Result
 
 Overview
 
-- Refactoring of routing functions inside of cli.py. All repetitive code was separated into functions and placed into separated file functions,py
+- Refactored routing logic by extracting repeated code from cli.py into reusable functions in functions.py
 
 Implementation
 
-- init_test_case, finalize_test_run, prepare_test_case,process_test_results, run_test_case functions were added to functions.py
-- functions are called inside of router function and appropriate outputs are dipslayed to user depending of mode
+- Extracted shared logic into functions.py:
+  - init_test_case
+  - run_test_case
+  - prepare_test_case
+  - process_test_results
+  - finalize_test_run
+- Route functions now call shared logic and handle mode-specific output
 
 Decisions
 
-- This approach was choosen in order to make readability easier and updating and debugging quicker
+- Chose to centralize repeated logic into reusable functions to improve maintainability, reduce duplication, and simplify debugging.
 
 Tradeoffs
 
-- Code is not intuitive and easy to grasp for begginers as before
+- Increased abstraction makes the code less intuitive for beginners compared to the previous linear approach.
 
 Result
 
-- Code is easy to update and debugg
+- Reduced code duplication and improved maintainability, making future changes and extensions easier.
+
+## TASK-025 – Multi-Model Support & Experimentation
+
+Overview
+
+- Added Google Gemini (`gemini-3.1-flash-lite-preview`) as a second model provider.
+- Enabled model comparison and failover capability.
+
+Implementation
+
+- Implemented `GEMINIClient` in `model.py`.
+- Introduced `PRIMARY_MODEL_PROVIDER` and `SECONDARY_MODEL_PROVIDER` in `config.py`.
+- Updated `init_test_case()` to initialize both primary and secondary clients.
+- Added `compare` mode for benchmarking models.
+- Added `failover` mode to retry with secondary model on failure.
+
+Decisions
+
+- Selected Gemini due to free tier and strong performance for experimentation.
+- Kept provider abstraction consistent across models.
+
+Tradeoffs
+
+- Increased complexity due to multi-provider support.
+- Did not integrate OpenAI/Anthropic to avoid costs, at the expense of using less industry-standard APIs.
+
+Result
+
+- System supports multiple model providers.
+- Can compare latency and output quality between models.
+- Failover ensures system resilience when primary model fails.
+- System no longer depends on a single model.
+
+## TASK-008 – Retrieval Augmented Generation (RAG)
+
+Overview
+
+- Simple RAG was implemented
+
+Implementation
+
+- Last 3 sessions were retrieved and injected into new input
+- Session retrival in persistence.py inside of retrive_session(), actuall injection is done inside of functions.py function get_input_based_on_mode()
+- Template file contains placeholder previous_inputs and previous_outputs,
+- get_input_based_on_mode() function is called inside of test_init()
+- User input gets injected with 3 last sessions
+- Model gets more context
+
+Decisions
+
+- This was the simpliest and quickest solution to be implemented
+- Key design choices
+
+Tradeoffs
+
+- More complicated RAG based on keywords or embbedings were not implemented
+- Although context is provided it is not as precise as keyword based and it is noisy
+
+Result
+
+- Provide more focused response
+- No more generic responses

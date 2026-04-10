@@ -44,12 +44,12 @@ def retrieve_session():
 
         try:
             with open("sessions.jsonl","r", encoding="utf-8") as file:
-                last_5_lines=[]
-                lines=file.readlines()[-5:]
+                last_3_lines=[]
+                lines=file.readlines()[-3:]
                 for line in lines:
                     single_line=json.loads(line)
-                    last_5_lines.append(single_line)
-                return last_5_lines    
+                    last_3_lines.append(single_line)
+                return last_3_lines    
         except Exception as e:
             logger.error(f"Retrieving session failed: {e}")
             return []

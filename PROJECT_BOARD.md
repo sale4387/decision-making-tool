@@ -2,54 +2,6 @@
 
 ## Backlog
 
-Goal
-Enhance model responses by retrieving relevant past data and injecting it into prompts.
-
-Problem
-Currently the model only sees the current input.
-Real AI systems improve responses by using relevant past context.
-
-Acceptance Criteria
-
-- System retrieves relevant past entries from memory
-- Retrieved context is injected into prompt before model call
-- Retrieval logic is simple (e.g., keyword match or recent items)
-- Works with existing template system
-- No external vector DB or embeddings (keep simple)
-- Behavior improves or changes based on past context
-
-Learning Objective
-
-- Understand RAG concept (retrieve + augment + generate)
-- Learn how to enrich prompts with context
-- Practice simple retrieval strategies
-- Build foundation for advanced AI systems
-
-Subtasks
-
-[ ] Subtask 1 – Load memory
-Reuse memory loader from TASK-007.
-
-[ ] Subtask 2 – Select relevant entries
-Implement simple retrieval (keyword or recent N).
-
-[ ] Subtask 3 – Format context
-Convert retrieved entries into prompt-friendly text.
-
-[ ] Subtask 4 – Inject into prompt
-Add context before user input in template.
-
-[ ] Subtask 5 – Test behavior
-Verify responses change based on past data.
-
-[ ] Subtask 6 – Keep system simple
-Avoid overengineering (no embeddings, no DB).
-
-References
-
-RAG concept
-https://huggingface.co/docs/transformers/main/en/tasks/rag
-
 ## TASK-009 – Speech-to-Text Input
 
 Goal
@@ -1159,7 +1111,7 @@ https://developers.google.com/machine-learning/data-prep/construct/sampling-spli
 
 ---
 
-## TASK-012 – Prompt Template System
+TASK-012 – Prompt Template System
 
 Goal
 Introduce a prompt template system so prompts are reusable, structured, and easily adjustable without changing code.
@@ -1215,7 +1167,7 @@ https://docs.python.org/3/library/string.html#formatstrings
 
 ---
 
-## TASK-007 – Local Memory and Weekly Summaries
+TASK-007 – Local Memory and Weekly Summaries
 
 Goal
 Introduce local memory so the system can store previous sessions and generate summaries over time.
@@ -1267,7 +1219,7 @@ https://docs.python.org/3/library/json.html
 
 ---
 
-## TASK-026 – Refactor Router Functions and Core Logic
+TASK-026 – Refactor Router Functions and Core Logic
 
 Goal
 Refactor duplicated logic across router functions by extracting shared behavior into reusable components while keeping mode-specific behavior separate.
@@ -1332,7 +1284,7 @@ https://refactoring.guru/refactoring
 
 ---
 
-## TASK-025 – Multi-Model Support & Experimentation
+TASK-025 – Multi-Model Support & Experimentation
 
 Goal
 Enable the system to run with multiple model providers and compare their outputs.
@@ -1381,5 +1333,57 @@ References
 
 Multi-model systems concept
 https://platform.openai.com/docs/guides/production-best-practices
+
+---
+
+TASK-008 – Retrieval Augmented Generation (RAG)
+
+Goal
+Enhance model responses by retrieving relevant past data and injecting it into prompts.
+
+Problem
+Currently the model only sees the current input.
+Real AI systems improve responses by using relevant past context.
+
+Acceptance Criteria
+
+- System retrieves relevant past entries from memory
+- Retrieved context is injected into prompt before model call
+- Retrieval logic is simple (e.g., keyword match or recent items)
+- Works with existing template system
+- No external vector DB or embeddings (keep simple)
+- Behavior improves or changes based on past context
+
+Learning Objective
+
+- Understand RAG concept (retrieve + augment + generate)
+- Learn how to enrich prompts with context
+- Practice simple retrieval strategies
+- Build foundation for advanced AI systems
+
+Subtasks
+
+[x] Subtask 1 – Load memory
+Reuse memory loader from TASK-007.
+
+[x] Subtask 2 – Select relevant entries
+Implement simple retrieval (keyword or recent N).
+
+[x] Subtask 3 – Format context
+Convert retrieved entries into prompt-friendly text.
+
+[x] Subtask 4 – Inject into prompt
+Add context before user input in template.
+
+[x] Subtask 5 – Test behavior
+Verify responses change based on past data.
+
+[x] Subtask 6 – Keep system simple
+Avoid overengineering (no embeddings, no DB).
+
+References
+
+RAG concept
+https://huggingface.co/docs/transformers/main/en/tasks/rag
 
 ---

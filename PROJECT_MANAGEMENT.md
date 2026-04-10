@@ -57,12 +57,13 @@ Only two model providers are used excluding widely accepted openAI and Anthophic
 ## TASK-008 – Retrieval Augmented Generation (RAG)
 
 Problem
-Current solution relies only on existing promtp not taking previous interactions into consideration
+Current solution relies only on the current prompt and does not use previous interactions, making responses stateless and less context-aware.
 
 User
-Previously defined end user of the solution
+End user of the decision-making tool.
 
 Metrics
-% of interactions in which at least 3 previous sessions are injected
+Percentage of interactions where at least 3 previous sessions are injected into the prompt.
 
 Trade off
+System relies on simple JSONL file storage without relevance filtering, which may introduce irrelevant context and does not scale compared to vector databases or embedding-based retrieval.

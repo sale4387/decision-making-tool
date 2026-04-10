@@ -19,3 +19,5 @@ Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or 
             "cheer": "..."
           }
 User input:{user_input}
+Previous 3 inputs: {previous_inputs}
+Previuous 3 responsers: {previous_responses}
