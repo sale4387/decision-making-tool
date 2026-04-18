@@ -1,5 +1,5 @@
 import argparse
-from config import user_input_test, allowed_log_levels, PRIMARY_MODEL_PROVIDER, SECONDARY_MODEL_PROVIDER
+from config import user_input_test, allowed_log_levels, PRIMARY_MODEL_PROVIDER, SECONDARY_MODEL_PROVIDER, MODEL_MAP
 from validation import validate_response_default, validate_response_partial, validate_response_minimal
 import logging
 from functions import init_test_case, finalize_test_run, prepare_test_case,process_test_results, run_test_case, PROVIDER_MAP
@@ -17,36 +17,42 @@ def get_cli_args():
 
             
 def function_test(mode):
+      total_tries=0
+      total_duration=0
+
       
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
 
       for test_case in user_input_test:
             
             test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
 
-            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(primary_client, prompt, validate_response_minimal)
+            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors= run_test_case(primary_client, prompt, validate_response_minimal)
             
-            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data, PRIMARY_MODEL_PROVIDER)
-            
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data, PRIMARY_MODEL_PROVIDER)
+            total_tries+=number_of_tries
+            total_duration+=duration
+
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
 
 def function_failover(mode):
-
-      failed_tests, passed_tests, test_results, session, category_results,ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
+      total_tries=0
+      total_duration=0
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
 
       for test_case in user_input_test:
 
             test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
 
-            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             provider=PRIMARY_MODEL_PROVIDER
 
             if test_status=="failed":
                   logger.info(f"Test with {PRIMARY_MODEL_PROVIDER} failed, trying with {SECONDARY_MODEL_PROVIDER}")
-                  test_status, parsed_data, duration, error_type, attempt, validation_errors=run_test_case(secondary_client, prompt, validate_response_default)
+                  test_status, parsed_data, duration, error_type, number_of_tries, validation_errors=run_test_case(secondary_client, prompt, validate_response_default)
                   provider=SECONDARY_MODEL_PROVIDER
 
 
@@ -59,43 +65,49 @@ def function_failover(mode):
                   print("====== NEXT STEPS ======\n",parsed_data.get("next_steps"), "\n" )
                   print(parsed_data.get("cheer"), "\n" )
 
-            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data, provider)
-            
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data, provider)
+            total_tries+=number_of_tries
+            total_duration+=duration
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
 
 
 def function_summary(mode):
-
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
+      total_tries=0
+      total_duration=0
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
 
       for test_case in user_input_test:
             
             test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
-            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             
             if parsed_data:
                   print(f"======={test_name}=======")
                   print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
 
-            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER)
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER)
             
+            total_tries+=number_of_tries
+            total_duration+=duration
+
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
 
 
 def function_rage(mode):
-
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
+      total_tries=0
+      total_duration=0
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
 
       for test_case in user_input_test:
             
             test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
-            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             
             if parsed_data:
                   print(f"======={test_name}=======")
@@ -103,21 +115,27 @@ def function_rage(mode):
                   print(f"======DURATION======\n{duration} sec.")
 
 
-            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data, PRIMARY_MODEL_PROVIDER)
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data, PRIMARY_MODEL_PROVIDER)
             
+            total_tries+=number_of_tries
+            total_duration+=duration
+   
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
 
 def default_route(mode):
 
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
+      total_tries=0
+      total_duration=0
+
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
 
       for test_case in user_input_test:
             
             test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
-            test_status, parsed_data, duration, error_type, attempt, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             if parsed_data:
                   print(f"======={test_name}=======")
                   print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
@@ -128,25 +146,33 @@ def default_route(mode):
                   print(parsed_data.get("cheer"), "\n" )
 
 
-            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests, test_results, session, mode, user_input, attempt, error_type, validation_errors, duration, parsed_data, PRIMARY_MODEL_PROVIDER)            
+            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests, test_results, session, mode, user_input, number_of_tries, error_type, validation_errors, duration, parsed_data, PRIMARY_MODEL_PROVIDER)            
+            
+            total_tries+=number_of_tries
+            total_duration+=duration
+
+            
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests, passed_tests, mode, test_results, session)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
 
 
 def function_compare(mode):
 
-      hf_client=HFClient("Qwen/Qwen2.5-1.5B-Instruct:featherless-ai")
-      gemini_client=GEMINIClient("gemini-3.1-flash-lite-preview") 
+      total_tries=0
+      total_duration=0
+
+      hf_client=HFClient(MODEL_MAP["huggingface"])
+      gemini_client=GEMINIClient(MODEL_MAP["google"]) 
       failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
 
       for test_case in user_input_test:
             
 
             test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
-            test_status_hf, parsed_data_hf, duration_hf, error_type_hf, attempt_hf, validation_errors_hf = run_test_case(hf_client, prompt, validate_response_partial)
-            test_status_g, parsed_data_g, duration_g, error_type_g, attempt_g, validation_errors_g = run_test_case(gemini_client, prompt, validate_response_partial)
+            test_status_hf, parsed_data_hf, duration_hf, error_type_hf, number_of_tries_hf, validation_errors_hf = run_test_case(hf_client, prompt, validate_response_partial)
+            test_status_g, parsed_data_g, duration_g, error_type_g, number_of_tries_g, validation_errors_g = run_test_case(gemini_client, prompt, validate_response_partial)
 
             print(f"======={test_name} - HF =======")
             print(f"=====STATUS=====\n{test_status_hf}")

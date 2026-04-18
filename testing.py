@@ -1,6 +1,5 @@
-from persistence import retrieve_session
+import whisper
 
-session_history=retrieve_session()
-
-for line in session_history:
-    print(line["results"]["output"])
+model = whisper.load_model("turbo")
+result = model.transcribe("audio.mp3")
+print(result["text"])
