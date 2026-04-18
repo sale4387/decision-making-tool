@@ -341,28 +341,33 @@ Result
 - System outputs are now measurable and comparable
 - Improved visibility into performance and stability
 
-## TASK-009 – Speech-to-Text Input
+# TASK-009 – Speech-to-Text Input
 
 Overview
 
-- A feature allowing user to upload a audio file as form of prompt
+- Added support for voice input by allowing the user to provide an audio file as a prompt
 
 Implementation
 
-- openAI Whisper from Hugging face was implemented, this model transcripts input from an audio file
-- Inside of functions.py convert_voice_to_text() is defined which returns a text transcripted from audio file, this function is called inside of router function_voice() which again gets called from cli
-- User records an audio file, system gets instruction from a text file, prompt gets replaced with transcripted text from an audio file and everything else like default_route()
+- Integrated Whisper model via HuggingFace transformers for speech-to-text
+- Defined convert_voice_to_text() in functions.py to transcribe audio file into text
+- Implemented dedicated function_voice() route to handle voice input flow
+- Transcribed text replaces user_input and is processed through existing pipeline
+- No changes required to core logic (prompting, validation, persistence)
 
 Decisions
 
-- Whisper model is the most used solution for converting speach to text so choice was obvious
+- Whisper was selected due to strong adoption, reliability, and availability in HuggingFace ecosystem
+- Used lightweight model (tiny/small) to prioritize speed for local usage
 
 Tradeoffs
 
-- A more sofisticated audio capture procedure was not implemeted
-- Current solution relies on single audi file which as to be recorded, converted and palced in dedicated folder
+- No real-time recording; relies on pre-recorded audio file
+- Single-file workflow (record → save → process) instead of dynamic input handling
+- Lower accuracy compared to larger or cloud-based models
 
 Result
 
-- System now can capture voice as an input
-- System is not relyying on text inputs only
+- System supports voice-based input alongside text
+- Maintains compatibility with existing architecture
+- Enables future UI-based recording and real-time interaction

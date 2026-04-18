@@ -184,5 +184,5 @@ def convert_voice_to_text(audio_file):
         converted_text= speech_to_text(audio_file)["text"]
         return converted_text
     except Exception as e:
-        logger.error(f"Converting speach to text filed: {e}")
+        logger.error(f"Converting speech to text filed: {e}")
         raise
