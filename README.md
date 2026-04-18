@@ -309,3 +309,60 @@ Result
 
 - Provide more focused response
 - No more generic responses
+
+## TASK-024 – Metrics & Decision Scoring Layer
+
+Overview
+
+- Introduced aggregated metrics for evaluating system performance
+
+Implementation
+
+- Calculated global success rate and per-category success rate
+- Computed average attempts and average duration per test run
+- Tracked error distribution across all tests
+- Aggregation handled in finalize_test_run()
+- Metrics stored in test_summary dictionary
+- Persisted alongside results in JSONL file
+- Added version field to track system changes
+
+Decisions
+
+- Kept implementation lightweight using existing JSONL storage
+- Avoided external tools or complex analytics layers
+
+Tradeoffs
+
+- Limited querying and filtering capabilities due to flat file storage
+- No advanced analytics or visualization
+
+Result
+
+- System outputs are now measurable and comparable
+- Improved visibility into performance and stability
+
+## TASK-009 – Speech-to-Text Input
+
+Overview
+
+- A feature allowing user to upload a audio file as form of prompt
+
+Implementation
+
+- openAI Whisper from Hugging face was implemented, this model transcripts input from an audio file
+- Inside of functions.py convert_voice_to_text() is defined which returns a text transcripted from audio file, this function is called inside of router function_voice() which again gets called from cli
+- User records an audio file, system gets instruction from a text file, prompt gets replaced with transcripted text from an audio file and everything else like default_route()
+
+Decisions
+
+- Whisper model is the most used solution for converting speach to text so choice was obvious
+
+Tradeoffs
+
+- A more sofisticated audio capture procedure was not implemeted
+- Current solution relies on single audi file which as to be recorded, converted and palced in dedicated folder
+
+Result
+
+- System now can capture voice as an input
+- System is not relyying on text inputs only

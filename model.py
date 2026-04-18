@@ -4,6 +4,7 @@ from google import genai
 import logging
 import time
 
+
 logger = logging.getLogger(__name__)
 
 
@@ -76,4 +77,8 @@ class GEMINIClient(ModelClient):
         logger.info(f"{self.model_name} response finished in {duration:.2f}s")
 
         return raw
+
+
+
+         
 

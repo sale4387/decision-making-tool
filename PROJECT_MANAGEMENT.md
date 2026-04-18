@@ -67,3 +67,31 @@ Percentage of interactions where at least 3 previous sessions are injected into 
 
 Trade off
 System relies on simple JSONL file storage without relevance filtering, which may introduce irrelevant context and does not scale compared to vector databases or embedding-based retrieval.
+
+## TASK-024 – Metrics
+
+Problem
+System generates structured outputs but lacks aggregated performance metrics, making evaluation, comparison, and improvement difficult.
+
+User
+Developer of the solution
+
+Metrics
+% of runs where aggregated metrics are computed and stored successfully
+
+Tradeoff
+Relies on simple JSONL storage, which limits querying, filtering, and analysis compared to database-based solutions
+
+## TASK-009 – Speech-to-Text Input
+
+Problem
+System currently supports only text input and lacks voice interaction capability.
+
+User
+End user of the tool
+
+Metrics
+% of runs where voice input is successfully converted to text and processed through the pipeline
+
+Tradeoff
+Uses lightweight local model (via HuggingFace), reducing dependency on external services but with lower transcription accuracy compared to cloud-based solutions

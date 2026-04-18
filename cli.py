@@ -1,8 +1,8 @@
 import argparse
-from config import user_input_test, allowed_log_levels, PRIMARY_MODEL_PROVIDER, SECONDARY_MODEL_PROVIDER, MODEL_MAP
+from config import user_input_test, allowed_log_levels, PRIMARY_MODEL_PROVIDER, SECONDARY_MODEL_PROVIDER, MODEL_MAP,AUDIO_FILE
 from validation import validate_response_default, validate_response_partial, validate_response_minimal
 import logging
-from functions import init_test_case, finalize_test_run, prepare_test_case,process_test_results, run_test_case, PROVIDER_MAP
+from functions import init_test_case, finalize_test_run, prepare_test_case,process_test_results, run_test_case, convert_voice_to_text
 from model import HFClient, GEMINIClient
 logger=logging.getLogger(__name__)
 
@@ -19,13 +19,17 @@ def get_cli_args():
 def function_test(mode):
       total_tries=0
       total_duration=0
+  
 
       
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
 
       for test_case in user_input_test:
             
-            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_name=test_case['name']
+            user_input=test_case["input"]
+            
+            prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
 
             test_status, parsed_data, duration, error_type, number_of_tries, validation_errors= run_test_case(primary_client, prompt, validate_response_minimal)
             
@@ -36,16 +40,19 @@ def function_test(mode):
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
 
 def function_failover(mode):
       total_tries=0
       total_duration=0
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
 
       for test_case in user_input_test:
 
-            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_name=test_case['name']
+            user_input=test_case["input"]
+            
+            prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
 
             test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             provider=PRIMARY_MODEL_PROVIDER
@@ -71,17 +78,21 @@ def function_failover(mode):
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
 
 
 def function_summary(mode):
       total_tries=0
       total_duration=0
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
 
       for test_case in user_input_test:
             
-            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_name=test_case['name']
+            user_input=test_case["input"]
+            
+            prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
+            
             test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             
             if parsed_data:
@@ -96,17 +107,21 @@ def function_summary(mode):
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
 
 
 def function_rage(mode):
       total_tries=0
       total_duration=0
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
 
       for test_case in user_input_test:
             
-            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_name=test_case['name']
+            user_input=test_case["input"]
+            
+            prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
+
             test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             
             if parsed_data:
@@ -123,18 +138,23 @@ def function_rage(mode):
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
 
 def default_route(mode):
 
       total_tries=0
       total_duration=0
 
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode,test_summary=init_test_case(mode)
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
 
       for test_case in user_input_test:
             
-            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            
+            test_name=test_case['name']
+            user_input=test_case["input"]
+            
+            prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
+
             test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
             if parsed_data:
                   print(f"======={test_name}=======")
@@ -155,7 +175,43 @@ def default_route(mode):
             if error_type:
                   ERROR_COUNTS[error_type] += 1
 
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration, test_summary)
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
+
+def function_voice(mode):
+
+      total_tries=0
+      total_duration=0
+
+      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
+      
+      user_input=convert_voice_to_text(AUDIO_FILE)
+      test_case = {"name": "speech_to_text", "input": user_input, "category": "audio_input"}
+      test_name=test_case["name"]
+  
+            
+      prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
+
+      test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+      if parsed_data:
+                  print(f"======={test_name}=======")
+                  print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
+                  print("====== OPTIONS ======\n",parsed_data.get("options"), "\n" )
+                  print("====== LIMITATIONS ======\n",parsed_data.get("constraints"), "\n" )
+                  print("====== PROS AND CONS ======\n",parsed_data.get("pros_cons"), "\n" )
+                  print("====== NEXT STEPS ======\n",parsed_data.get("next_steps"), "\n" )
+                  print(parsed_data.get("cheer"), "\n" )
+
+
+      process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests, test_results, session, mode, user_input, number_of_tries, error_type, validation_errors, duration, parsed_data, PRIMARY_MODEL_PROVIDER)            
+            
+      total_tries+=number_of_tries
+      total_duration+=duration
+
+            
+      if error_type:
+                  ERROR_COUNTS[error_type] += 1
+
+      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
 
 
 def function_compare(mode):
@@ -170,7 +226,11 @@ def function_compare(mode):
       for test_case in user_input_test:
             
 
-            test_name, user_input, prompt=prepare_test_case(test_case, input_based_on_mode)
+            test_name=test_case['name']
+            user_input=test_case["input"]
+            
+            prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
+
             test_status_hf, parsed_data_hf, duration_hf, error_type_hf, number_of_tries_hf, validation_errors_hf = run_test_case(hf_client, prompt, validate_response_partial)
             test_status_g, parsed_data_g, duration_g, error_type_g, number_of_tries_g, validation_errors_g = run_test_case(gemini_client, prompt, validate_response_partial)
 
@@ -197,7 +257,8 @@ def route_mode(mode):
             "summary":function_summary,
             "rage":function_rage,
             "test":function_test,
-            "compare":function_compare
+            "compare":function_compare,
+            "voice":function_voice
             }
       if mode in handlers:
             handlers[mode](mode)

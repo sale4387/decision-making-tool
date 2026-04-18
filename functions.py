@@ -1,6 +1,6 @@
 import json
 import os
-from config import user_input_test, ALLOWED_CATEGORIES, PRIMARY_MODEL_PROVIDER,SECONDARY_MODEL_PROVIDER, MODEL_MAP
+from config import user_input_test, ALLOWED_CATEGORIES, PRIMARY_MODEL_PROVIDER,SECONDARY_MODEL_PROVIDER, MODEL_MAP, VERSION
 import time
 from model import HFClient, GEMINIClient
 from validation import validate_test_cases
@@ -8,6 +8,8 @@ import logging
 from persistence import save_results, save_session, retrieve_session
 from evaluation import evaluation
 from cleaner import clean_response
+import torch
+from transformers import pipeline
 
 
 logger=logging.getLogger(__name__)
@@ -59,28 +61,28 @@ def init_test_case(mode):
 def run_test_case(client, prompt, validation_function):
       
       start_time=time.time()
-      max_attempts=3
-      attempt =0
+      max_retriess=3
+      retries =1
       parsed_data=None
       validation_errors=[]
       error_type=None
       test_status="failed"
 
-      while attempt < max_attempts:
+      while retries < max_retriess:
                         
                         try:
                               raw_response = client.api_call(prompt)
                         except Exception:
-                              attempt += 1
-                              logger.debug(f"Attempt {attempt} failed, model error.")
+                              retries += 1
+                              logger.debug(f"Try {retries} failed, model error.")
                               error_type = "MODEL_ERROR"
                               continue
 
                         cleaner_status, json_text= clean_response(raw_response)
                         
                         if cleaner_status == False:
-                              attempt+=1
-                              logger.debug(f"Attempt {attempt} failed, no JSON object found.")
+                              retries+=1
+                              logger.debug(f"Try {retries} failed, no JSON object found.")
                               error_type="CLEANER_ERROR"
                               continue
                         try:
@@ -91,22 +93,22 @@ def run_test_case(client, prompt, validation_function):
                                     error_type=None
                                     break
                               else:
-                                    attempt+=1
-                                    logger.debug(f"Attempt {attempt} failed, validation error(s).")
+                                    retries+=1
+                                    logger.debug(f"Try {retries} failed, validation error(s).")
                                     error_type="VALIDATION_ERROR"
                                     continue
                         except json.JSONDecodeError:
-                                attempt+=1
-                                logger.debug(f"Attempt {attempt} failed, parsing error.")
+                                retries+=1
+                                logger.debug(f"Try {retries} failed, parsing error.")
                                 error_type="PARSE_ERROR"
                                 continue
                         
       end_time=time.time()
       duration=end_time-start_time
 
-      return test_status, parsed_data, duration, error_type, attempt, validation_errors
+      return test_status, parsed_data, duration, error_type, retries, validation_errors
 
-def process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, attempt, error_type,validation_errors, duration,parsed_data, provider):
+def process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, retries, error_type,validation_errors, duration,parsed_data, provider):
       
       logger.info(f"{test_name} - {test_status}")
 
@@ -121,31 +123,42 @@ def process_test_results(test_name, test_status, test_case, category_results, pa
             category_results[cat]["failed"] += 1
             failed_tests.append(test_name)
 
-      test_results.append({"name":test_name,"status":test_status,"attempts":attempt,"error_type":error_type,"errors":validation_errors,"duration":duration,"provider":provider})
+      test_results.append({"name":test_name,"status":test_status,"retriess":retries,"error_type":error_type,"errors":validation_errors,"duration":duration,"provider":provider})
       session.update({"name":test_name,"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
       logger.info(f"{test_name} is finished.")
 
-def finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session):
+def finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session,total_tries, total_duration):
       
+      test_summary={}
+
       for err, count in ERROR_COUNTS.items():
             logger.info(f"{err}: {count}")
 
       for cat, stats in category_results.items():
             logger.info(f"Category {cat}: {stats['passed']} passed, {stats['failed']} failed")
+            total_failed_tests=len(failed_tests)
+            total_passed_tests=len(passed_tests)
+            total_tests=total_passed_tests+total_failed_tests
+            overall_success_rate=total_passed_tests/total_tests
+            avg_duration=total_duration/total_tests
+            avg_tries=total_tries/total_tests
+            category_success_rate=stats["passed"]/total_tests
+            category_results[cat]["succes_rate"]=category_success_rate
+
+      test_summary.update({"overal_succes_rate":overall_success_rate,"category_success_rate":category_success_rate,"avg_duration":avg_duration,"avg_tries":avg_tries,"version":VERSION})
+      logger.info(f"Aggregated run metrics: Overall success rate - {overall_success_rate}, Category success rate - {category_success_rate}, Average duration: {avg_duration:.2f}s, Average retries - {avg_tries}, Version - {VERSION}")
+
+      
+      
 
       evaluation(failed_tests, passed_tests)
-      save_results(test_results, mode)
+      save_results(test_results, mode, test_summary)
       save_session(session)
-      session_history=retrieve_session()
 
-      logger.info("Last 5 lines:")
-      for line in session_history:
-            logger.info(f"Id: {line['id']} - Timestamp:{line['timestamp']}\n")
 
-def prepare_test_case(test_case, input_based_on_mode):
-            test_name= test_case["name"]
-            logger.info(f"Test {test_case['name']} started.")
-            user_input=test_case["input"]
+def prepare_test_case(test_name,user_input, input_based_on_mode):
+            
+            logger.info(f"Test {test_name} started.")
 
             session_history=retrieve_session()
 
@@ -159,4 +172,17 @@ def prepare_test_case(test_case, input_based_on_mode):
             previous_outputs_text = "\n".join([json.dumps(o) for o in previous_outputs])
 
             prompt=input_based_on_mode.replace("{user_input}", user_input).replace("{previous_inputs}",previous_inputs_text).replace("{previous_responses}", previous_outputs_text)
-            return test_name, user_input, prompt
+            return prompt
+
+def convert_voice_to_text(audio_file):
+    try:
+        speech_to_text = pipeline(
+            task="automatic-speech-recognition",
+            model="openai/whisper-tiny",
+            device=-1
+        )
+        converted_text= speech_to_text(audio_file)["text"]
+        return converted_text
+    except Exception as e:
+        logger.error(f"Converting speach to text filed: {e}")
+        raise

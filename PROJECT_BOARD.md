@@ -2,51 +2,6 @@
 
 ## Backlog
 
-## TASK-009 – Speech-to-Text Input
-
-Goal
-Allow user to provide input via voice using a local speech-to-text model.
-
-Problem
-Currently input is text-only.
-Adding speech improves usability but is not core system logic.
-
-Acceptance Criteria
-
-- User can record or input audio
-- Audio is converted to text locally
-- Converted text is used as standard input
-- Works with existing pipeline (no changes to core logic)
-- Uses lightweight/local model (no heavy infra)
-
-Learning Objective
-
-- Understand speech-to-text basics
-- Learn how to integrate external tools into pipeline
-- Practice handling different input types
-
-Subtasks
-
-[ ] Subtask 1 – Choose library
-Select simple STT tool (e.g., Whisper local).
-
-[ ] Subtask 2 – Capture audio
-Allow recording or file input.
-
-[ ] Subtask 3 – Convert to text
-Run speech model and get transcript.
-
-[ ] Subtask 4 – Integrate
-Feed transcript into existing flow.
-
-[ ] Subtask 5 – Test
-Verify accuracy and usability.
-
-References
-
-OpenAI Whisper
-https://github.com/openai/whisper
-
 ## TASK-010 – Packaging the Tool
 
 Goal
@@ -141,57 +96,6 @@ References
 
 Streamlit docs
 https://docs.streamlit.io/
-
-## TASK-024 – Metrics & Decision Scoring Layer
-
-Goal
-Introduce structured metrics and basic decision scoring to evaluate system performance and improve output usefulness.
-
-Problem
-Currently the system generates structured outputs but lacks measurement and decision quality signals.
-Without metrics, it is difficult to assess performance, compare runs, or improve the system.
-
-Acceptance Criteria
-
-- System tracks key metrics:
-  - success rate per category
-  - average attempts per test
-  - error distribution (MODEL, CLEANER, PARSE, VALIDATION)
-  - latency per test
-
-- Metrics are aggregated and logged at end of run
-- Each result includes optional scoring (e.g., ranking or simple score per option)
-- Output includes a version field (e.g., `"version": "v1"`)
-- No external tools (keep within current structure)
-
-Learning Objective
-
-- Understand evaluation and measurement in AI systems
-- Learn how to quantify system performance
-- Practice adding lightweight scoring logic
-- Improve system credibility for real-world use
-
-Subtasks
-
-[ ] Subtask 1 – Extend result structure
-Add fields for latency, attempts, errors, and version.
-
-[ ] Subtask 2 – Aggregate metrics
-Compute summary statistics across all tests.
-
-[ ] Subtask 3 – Log metrics
-Display aggregated results clearly at end of run.
-
-[ ] Subtask 4 – Add simple scoring
-Rank or score options based on constraints (basic logic only).
-
-[ ] Subtask 5 – Validate integration
-Ensure metrics do not break existing pipeline.
-
-References
-
-Python statistics
-https://docs.python.org/3/library/statistics.html
 
 ---
 
@@ -1387,3 +1291,97 @@ RAG concept
 https://huggingface.co/docs/transformers/main/en/tasks/rag
 
 ---
+
+TASK-024 – Metrics
+
+Goal
+Introduce structured metrics and basic decision scoring to evaluate system performance and improve output usefulness.
+
+Problem
+Currently the system generates structured outputs but lacks measurement and decision quality signals.
+Without metrics, it is difficult to assess performance, compare runs, or improve the system.
+
+Acceptance Criteria
+
+- System tracks key metrics:
+  - success rate per category
+  - average attempts per test
+  - error distribution (MODEL, CLEANER, PARSE, VALIDATION)
+  - latency per test
+
+- Metrics are aggregated and logged at end of run
+- Output includes a version field (e.g., `"version": "v1"`)
+- No external tools (keep within current structure)
+
+Learning Objective
+
+- Understand evaluation and measurement in AI systems
+- Learn how to quantify system performance
+- Practice adding lightweight scoring logic
+- Improve system credibility for real-world use
+
+Subtasks
+
+[x] Subtask 1 – Extend result structure
+Add fields for latency, attempts, errors, and version.
+
+[x] Subtask 2 – Aggregate metrics
+Compute summary statistics across all tests.
+
+[x] Subtask 3 – Log metrics
+Display aggregated results clearly at end of run.
+
+[x] Subtask 5 – Validate integration
+Ensure metrics do not break existing pipeline.
+
+References
+
+Python statistics
+https://docs.python.org/3/library/statistics.html
+
+---
+
+## TASK-009 – Speech-to-Text Input
+
+Goal
+Allow user to provide input via voice using a local speech-to-text model.
+
+Problem
+Currently input is text-only.
+Adding speech improves usability but is not core system logic.
+
+Acceptance Criteria
+
+- User can record or input audio
+- Audio is converted to text locally
+- Converted text is used as standard input
+- Works with existing pipeline (no changes to core logic)
+- Uses lightweight/local model (no heavy infra)
+
+Learning Objective
+
+- Understand speech-to-text basics
+- Learn how to integrate external tools into pipeline
+- Practice handling different input types
+
+Subtasks
+
+[x] Subtask 1 – Choose library
+Select simple STT tool (e.g., Whisper local).
+
+[x] Subtask 2 – Capture audio
+Allow recording or file input.
+
+[x] Subtask 3 – Convert to text
+Run speech model and get transcript.
+
+[x] Subtask 4 – Integrate
+Feed transcript into existing flow.
+
+[x] Subtask 5 – Test
+Verify accuracy and usability.
+
+References
+
+OpenAI Whisper
+https://github.com/openai/whisper

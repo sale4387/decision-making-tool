@@ -1,5 +1,10 @@
-import whisper
+import torch
+from transformers import pipeline
 
-model = whisper.load_model("turbo")
-result = model.transcribe("audio.mp3")
-print(result["text"])
+speach_to_text = pipeline(
+    task="automatic-speech-recognition",
+    model="openai/whisper-tiny",
+    device=1
+)
+
+print(speach_to_text("Recording.mp3")["text"])
