@@ -371,3 +371,34 @@ Result
 - System supports voice-based input alongside text
 - Maintains compatibility with existing architecture
 - Enables future UI-based recording and real-time interaction
+
+# TASK-027 – Robustness Layer
+
+Overview
+
+- Improved system stability by adding timeout handling and retry logic to model calls
+
+Implementation
+
+- Connected configuration values (temperature, timeout, max_tokens) to model calls
+- Implemented retry mechanism using MAX_RETRIES from config
+- Added timeout handling for both HuggingFace and Gemini clients
+- Ensured model calls do not hang indefinitely
+- Added controlled failure when all retries are exhausted
+
+Decisions
+
+- Used simple retry loop with break-on-success pattern
+- Kept logic inside model clients for reuse across all routes
+
+Tradeoffs
+
+- Increased complexity in model layer
+- Slightly longer execution time due to retries
+- Limited number of attempts per call (controlled via config)
+
+Result
+
+- System no longer hangs on model calls
+- Failures are handled gracefully with retries and timeout control
+- Improved reliability and consistency across runs
