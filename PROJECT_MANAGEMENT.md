@@ -87,6 +87,8 @@ Relies on simple JSONL storage, which limits querying, filtering, and analysis c
 Problem
 System currently supports only text input and lacks voice interaction capability.
 
+## TASK-027 – Robustness Layer
+
 User
 End user of the tool
 
@@ -95,3 +97,15 @@ Metrics
 
 Tradeoff
 Uses lightweight local model (via HuggingFace), reducing dependency on external services but with lower transcription accuracy compared to cloud-based solutions
+
+Problem
+Current system assumes ideal conditions and may fail or break when model calls, parsing, or validation do not behave as expected.
+
+User
+Developer of the solution
+
+Metrics
+% of runs completed without crashing despite model or processing errors
+
+Tradeoff
+Additional logic increases complexity but significantly improves system reliability

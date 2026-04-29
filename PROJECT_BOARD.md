@@ -47,56 +47,6 @@ References
 Python packaging
 https://packaging.python.org/en/latest/tutorials/packaging-projects/
 
-## TASK-023 – Basic UI (Streamlit)
-
-Goal
-Provide a minimal user interface to interact with the system and demonstrate its capabilities.
-
-Problem
-Currently the system is CLI-only, which makes it harder to demo, explain, and use interactively.
-A simple UI improves usability and presentation without adding unnecessary complexity.
-
-Acceptance Criteria
-
-- UI allows user to input text
-- UI triggers model pipeline (same as CLI)
-- UI displays structured output clearly
-- UI integrates with existing system (no duplicated logic)
-- Runs locally with a single command
-- No complex frontend (use simple framework)
-
-Learning Objective
-
-- Understand how to expose backend systems via UI
-- Learn basic integration between UI and logic layer
-- Practice keeping UI thin (no business logic inside UI)
-- Improve project presentation for demos/interviews
-
-Subtasks
-
-[ ] Subtask 1 – Choose framework
-Use Streamlit (simple, fast, Python-based).
-
-[ ] Subtask 2 – Create UI file
-Create `ui.py` (or similar entry point).
-
-[ ] Subtask 3 – Add input field
-Allow user to enter text (textarea or input box).
-
-[ ] Subtask 4 – Trigger pipeline
-Call existing logic (do NOT duplicate code).
-
-[ ] Subtask 5 – Display output
-Show model response in readable format.
-
-[ ] Subtask 6 – Run and test
-Ensure UI runs with single command and works end-to-end.
-
-References
-
-Streamlit docs
-https://docs.streamlit.io/
-
 ---
 
 ## This Sprint
@@ -105,6 +55,14 @@ https://docs.streamlit.io/
 
 ## In Progress
 
+---
+
+## Project structure best practices
+
+---
+
+## Blocked
+
 ## TASK-023 – Basic UI (Streamlit)
 
 Goal
@@ -132,10 +90,10 @@ Learning Objective
 
 Subtasks
 
-[ ] Subtask 1 – Choose framework
+[x] Subtask 1 – Choose framework
 Use Streamlit (simple, fast, Python-based).
 
-[ ] Subtask 2 – Create UI file
+[x] Subtask 2 – Create UI file
 Create `ui.py` (or similar entry point).
 
 [ ] Subtask 3 – Add input field
@@ -154,14 +112,6 @@ References
 
 Streamlit docs
 https://docs.streamlit.io/
-
----
-
-## Project structure best practices
-
----
-
-## Blocked
 
 ---
 
@@ -1435,3 +1385,39 @@ References
 
 OpenAI Whisper
 https://github.com/openai/whisper
+
+---
+
+## TASK-027 – Robustness Layer
+
+Goal
+Improve system stability by handling failures, timeouts, and fallback scenarios.
+
+Problem
+Current system assumes ideal conditions and may fail or break when model calls, parsing, or validation do not behave as expected.
+
+Acceptance Criteria
+
+- Retry logic implemented (at least 1 retry on failure)
+- Timeout handling added to model calls
+- Fallback model is triggered on primary failure
+- Errors are properly logged and categorized
+- System does not crash on failure and continues execution
+
+Learning Objective
+
+- Understand failure handling in AI pipelines
+- Learn how to build resilient systems
+- Practice defensive programming
+
+Subtasks
+[x] Subtask 1 – Retry logic Add retry mechanism for model calls
+[x] Subtask 2 – Timeout handling Ensure model calls do not hang indefinitely
+[x] Subtask 3 – Fallback model Use secondary model when primary fails
+[x] Subtask 4 – Error handling Improve logging and prevent crashes
+[x] Subtask 5 – Integration Ensure robustness layer does not break existing pipeline
+
+References
+Python exception handling https://docs.python.org/3/tutorial/errors.html
+
+---

@@ -1,11 +1,10 @@
 import os
 
-
 HF_TOKEN=os.getenv("HF_TOKEN")
 PRIMARY_MODEL_PROVIDER = "huggingface"
 SECONDARY_MODEL_PROVIDER = "google"
 
-VERSION="v1"
+VERSION="v2 - model retries and timeout"
 
 MODEL_MAP={
     "huggingface":"Qwen/Qwen2.5-1.5B-Instruct:featherless-ai",
@@ -20,7 +19,7 @@ LOG_LEVEL = "INFO"
 allowed_log_levels=["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]
 
 TEMPERATURE = 0.3
-MAX_TOKENS = 800
+MAX_TOKENS = 100
 TOP_P = 0.9
 
 AUDIO_FILE="Recording.mp3"

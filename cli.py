@@ -42,7 +42,7 @@ def function_test(mode):
 
       finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
 
-def function_failover(mode):
+def default_route(mode):
       total_tries=0
       total_duration=0
       failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
@@ -140,43 +140,6 @@ def function_rage(mode):
 
       finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
 
-def default_route(mode):
-
-      total_tries=0
-      total_duration=0
-
-      failed_tests, passed_tests, test_results,session, category_results, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
-
-      for test_case in user_input_test:
-            
-            
-            test_name=test_case['name']
-            user_input=test_case["input"]
-            
-            prompt=prepare_test_case(test_name,user_input,input_based_on_mode)
-
-            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
-            if parsed_data:
-                  print(f"======={test_name}=======")
-                  print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
-                  print("====== OPTIONS ======\n",parsed_data.get("options"), "\n" )
-                  print("====== LIMITATIONS ======\n",parsed_data.get("constraints"), "\n" )
-                  print("====== PROS AND CONS ======\n",parsed_data.get("pros_cons"), "\n" )
-                  print("====== NEXT STEPS ======\n",parsed_data.get("next_steps"), "\n" )
-                  print(parsed_data.get("cheer"), "\n" )
-
-
-            process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests, test_results, session, mode, user_input, number_of_tries, error_type, validation_errors, duration, parsed_data, PRIMARY_MODEL_PROVIDER)            
-            
-            total_tries+=number_of_tries
-            total_duration+=duration
-
-            
-            if error_type:
-                  ERROR_COUNTS[error_type] += 1
-
-      finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session, total_tries, total_duration)
-
 def function_voice(mode):
 
       total_tries=0
@@ -253,7 +216,6 @@ def function_compare(mode):
 def route_mode(mode):
 
       handlers={
-            "failover":function_failover,
             "summary":function_summary,
             "rage":function_rage,
             "test":function_test,
