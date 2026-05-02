@@ -7,13 +7,12 @@ logger=logging.getLogger(__name__)
 
 
 
-def save_results(test_results, mode, test_summary):
+def save_results(test_results, mode):
     
     run_record={
         "timestamp":time.strftime("%Y-%m-%d %H:%M:%S"),
         "mode":mode,
         "results":test_results,
-        "summary":test_summary
     }
 
     serialized_record=json.dumps(run_record)

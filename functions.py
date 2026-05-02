@@ -1,12 +1,10 @@
 import json
 import os
-from config import user_input_test, ALLOWED_CATEGORIES, PRIMARY_MODEL_PROVIDER,SECONDARY_MODEL_PROVIDER, MODEL_MAP, VERSION
+from config import PRIMARY_MODEL_PROVIDER,SECONDARY_MODEL_PROVIDER, MODEL_MAP, VERSION
 import time
 from model import HFClient, GEMINIClient
-from validation import validate_test_cases
 import logging
 from persistence import save_results, save_session, retrieve_session
-from evaluation import evaluation
 from cleaner import clean_response
 import torch
 from transformers import pipeline
@@ -28,19 +26,14 @@ def get_mode_input(mode):
 
 def init_test_case(mode):
 
-      failed_tests=[]
-      passed_tests=[]
       test_results=[]
       session={}
-      category_results = {}
       ERROR_COUNTS = {
       "MODEL_ERROR": 0,
       "CLEANER_ERROR": 0,
       "PARSE_ERROR": 0,
       "VALIDATION_ERROR": 0
       }
-
-      validate_test_cases(user_input_test, ALLOWED_CATEGORIES)
 
       primary_model_name=MODEL_MAP[PRIMARY_MODEL_PROVIDER]
       primary_client_class = PROVIDER_MAP.get(PRIMARY_MODEL_PROVIDER)
@@ -56,7 +49,7 @@ def init_test_case(mode):
       
       input_based_on_mode =get_mode_input(mode)
 
-      return failed_tests, passed_tests, test_results,session, category_results,ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode
+      return test_results,session,ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode
 
 def run_test_case(client, prompt, validation_function):
       
@@ -65,7 +58,7 @@ def run_test_case(client, prompt, validation_function):
       retries =1
       parsed_data=None
       validation_errors=[]
-      error_type=None
+      error_type="None"
       test_status="failed"
 
       while retries < max_retriess:
@@ -105,60 +98,33 @@ def run_test_case(client, prompt, validation_function):
                         
       end_time=time.time()
       duration=end_time-start_time
+      duration=f"{duration:.2f}"
 
       return test_status, parsed_data, duration, error_type, retries, validation_errors
 
-def process_test_results(test_name, test_status, test_case, category_results, passed_tests, failed_tests,test_results,session,mode, user_input, retries, error_type,validation_errors, duration,parsed_data, provider):
+def process_test_results(test_status,test_results,session,mode, user_input, retries, error_type,validation_errors, duration,parsed_data, provider):
       
-      logger.info(f"{test_name} - {test_status}")
+      logger.info(f"Test - {test_status}")
 
-      cat = test_case["category"]
-      if cat not in category_results:
-            category_results[cat] = {"passed": 0, "failed": 0}
+      test_results.append({"status":test_status,"retriess":retries,"error_type":error_type,"errors":validation_errors,"duration":duration,"provider":provider})
+      session.update({"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
+      logger.info(f" Test is finished.")
 
-      if test_status == "passed":
-            category_results[cat]["passed"] += 1
-            passed_tests.append(test_name)
-      else:
-            category_results[cat]["failed"] += 1
-            failed_tests.append(test_name)
-
-      test_results.append({"name":test_name,"status":test_status,"retriess":retries,"error_type":error_type,"errors":validation_errors,"duration":duration,"provider":provider})
-      session.update({"name":test_name,"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
-      logger.info(f"{test_name} is finished.")
-
-def finalize_test_run(ERROR_COUNTS, category_results, failed_tests,passed_tests,mode,test_results,session,total_tries, total_duration):
+def finalize_test_run(ERROR_COUNTS,mode,test_results,session):
       
-      test_summary={}
 
       for err, count in ERROR_COUNTS.items():
             logger.info(f"{err}: {count}")
 
-      for cat, stats in category_results.items():
-            logger.info(f"Category {cat}: {stats['passed']} passed, {stats['failed']} failed")
-            total_failed_tests=len(failed_tests)
-            total_passed_tests=len(passed_tests)
-            total_tests=total_passed_tests+total_failed_tests
-            overall_success_rate=total_passed_tests/total_tests
-            avg_duration=total_duration/total_tests
-            avg_tries=total_tries/total_tests
-            category_success_rate=stats["passed"]/total_tests
-            category_results[cat]["succes_rate"]=category_success_rate
 
-      test_summary.update({"overal_succes_rate":overall_success_rate,"category_success_rate":category_success_rate,"avg_duration":avg_duration,"avg_tries":avg_tries,"version":VERSION})
-      logger.info(f"Aggregated run metrics: Overall success rate - {overall_success_rate}, Category success rate - {category_success_rate}, Average duration: {avg_duration:.2f}s, Average retries - {avg_tries}, Version - {VERSION}")
 
-      
-      
-
-      evaluation(failed_tests, passed_tests)
-      save_results(test_results, mode, test_summary)
+      save_results(test_results, mode)
       save_session(session)
 
 
-def prepare_test_case(test_name,user_input, input_based_on_mode):
+def prepare_test_case(user_input, input_based_on_mode, mode):
             
-            logger.info(f"Test {test_name} started.")
+            logger.info(f"Test started. Mode: {mode}")
 
             session_history=retrieve_session()
 

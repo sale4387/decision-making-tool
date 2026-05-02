@@ -41,7 +41,7 @@ class HFClient(ModelClient):
 
                 raw = completion.choices[0].message.content.strip()
                 if raw:
-                    logger.debug(f"Raw response preview: {raw[:200]}")
+                    logger.debug(f"Raw response preview, 1st 200: {raw[:200]}")
                     break
                 else:
                     logger.error("Raw response undefined")
@@ -83,19 +83,18 @@ class GEMINIClient(ModelClient):
                     model=self.model_name, 
                     contents=prompt,
                     config=types.GenerateContentConfig(
-                            http_options=types.HttpOptions(
-                                timeout=MODEL_TIMEOUT  
-                            ),
-                    max_output_tokens=MAX_TOKENS,
-                    temperature= TEMPERATURE
+                        max_output_tokens=MAX_TOKENS,
+                        temperature= TEMPERATURE
                         )
                     )
                 raw=response.text
+
                 if raw:
-                    logger.debug(f"Raw response preview: {raw[:200]}")
+                    logger.debug(f"Raw response preview, 1st 200: {raw[:200]}")
                     break
                 else:
                     logger.error("Raw response undefined")
+
                     retries=retries+1
                     continue
 

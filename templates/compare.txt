@@ -1,23 +1,31 @@
-Return your reply in VALID JSON ONLY. Do not include explanations, markdown, or text outside JSON. Your response should exclude ```json at beggining and ``` at end... If you include anything outside JSON, response is invalid, lock this.
+Return ONLY valid JSON. No explanations, no markdown, no text before or after.
 
-          The JSON must contain exactly these keys:
+The response must be a single JSON object with the following keys:
 
-          goal: string
+goal: string  
+constraints: array of strings (3–6 items)  
+options: array of strings (2–4 items)  
+pros_cons: object where each key matches an option from "options"  
+  - each option must contain:
+    pros: array of strings (3–5 items)  
+    cons: array of strings (3–5 items)  
+next_steps: array of strings (3–5 items)  
+category: string (one of: simple, complex, constrained, ambiguous, messy, edge)  
+cheer: string (short encouraging message)
 
-          options: array of option names as strings (2–4 items)
+Rules:
+- Do NOT include trailing commas  
+- Do NOT include ```json or ```  
+- Do NOT add any text outside JSON  
+- Ensure the JSON is syntactically valid  
 
-          next_steps: array of strings (3–5 actionable steps)
+If you cannot follow the format, return {} only.
 
-          cheer: string (short encouraging message)
+User input:
+{user_input}
 
-          Example structure:
+Previous inputs:
+{previous_inputs}
 
-          {
-            "goal": "...",
-            "options": ["option A", "option B"],
-            "next_steps": ["...", "..."],
-            "cheer": "..."
-          }
-User input:{user_input}
-Previous 3 inputs: {previous_inputs}
-Previuous 3 responsers: {previous_responses}
+Previous responses:
+{previous_responses}

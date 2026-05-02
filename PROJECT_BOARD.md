@@ -2,6 +2,12 @@
 
 ## Backlog
 
+## TASK-029 – Data Contracts & Validation
+
+## TASK-030 – Performance Basics
+
+## TASK-031 – API Layer
+
 ## TASK-010 – Packaging the Tool
 
 Goal
@@ -50,6 +56,50 @@ https://packaging.python.org/en/latest/tutorials/packaging-projects/
 ---
 
 ## This Sprint
+
+## TASK-028 – Evaluation Layer v2
+
+Goal
+Improve evaluation by measuring output quality, not just pass/fail.
+
+Problem
+Current system only validates structure and basic correctness, but does not assess quality or usefulness of model outputs.
+
+Acceptance Criteria
+
+- Basic scoring system implemented (e.g. 1–5 or pass/partial/fail)
+- Ability to evaluate output quality based on simple rules
+- Evaluation results stored alongside existing test results
+- Optional comparison between primary and fallback model outputs
+- Summary includes quality-related metrics
+
+Learning Objective
+
+- Understand evaluation beyond validation
+- Learn how to measure AI output quality
+- Practice building simple scoring systems
+
+Subtasks
+
+[x] Subtask 1 – Define scoring rules
+Create simple rules to evaluate output quality
+
+[] Subtask 2 – Implement scoring
+Apply scoring logic to parsed model output
+
+[] Subtask 3 – Store results
+Extend test_results to include quality scores
+
+[] Subtask 4 – Compare outputs (optional)
+Compare primary vs fallback model results
+
+[] Subtask 5 – Integrate
+Ensure evaluation layer works with existing pipeline
+
+References
+
+Evaluation basics
+https://platform.openai.com/docs/guides/evaluation
 
 ---
 
@@ -1419,5 +1469,55 @@ Subtasks
 
 References
 Python exception handling https://docs.python.org/3/tutorial/errors.html
+
+---
+
+## TASK-033 – Transition to Single-Input Execution Flow
+
+Goal
+Refactor the system from batch test execution to a single user input flow suitable for real usage.
+
+Problem
+The system was built around multiple predefined test cases and batch summaries, which increased cost, complexity, and reduced real-world usability.
+
+User
+Developer of the solution
+
+Metrics
+Successful execution of a single input with stable output, retries, and fallback without reliance on test cases
+
+Tradeoff
+Loss of batch testing capabilities in favor of a simpler and more realistic execution model
+
+Acceptance Criteria
+
+- System processes a single user input instead of looping through test cases
+- Test-based functions and logic removed or refactored
+- Output is generated, validated, and persisted for one execution
+- Fallback between models works in single-run mode
+- Test summary logic removed or simplified
+
+Learning Objective
+
+- Understand transition from test environment to production-like flow
+- Learn to simplify architecture while preserving core functionality
+- Practice removing unnecessary abstractions
+
+Subtasks
+
+[x] Subtask 1 – Remove test mode
+Delete function_test and related batch logic
+
+[x] Subtask 2 – Refactor CLI routes
+Update all routes to handle a single input instead of loops
+
+[x] Subtask 3 – Simplify result handling
+Remove category aggregation and test summary logic
+
+[x] Subtask 4 – Stabilize pipeline
+Ensure retry, cleaner, and fallback work in single-run mode
+
+[x] Subtask 5 – Validate end-to-end flow
+Confirm successful execution, logging, and persistence for single input
 
 ---
