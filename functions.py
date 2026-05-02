@@ -8,6 +8,7 @@ from persistence import save_results, save_session, retrieve_session
 from cleaner import clean_response
 import torch
 from transformers import pipeline
+import difflib
 
 
 logger=logging.getLogger(__name__)
@@ -51,7 +52,7 @@ def init_test_case(mode):
 
       return test_results,session,ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode
 
-def run_test_case(client, prompt, validation_function):
+def run_test_case(client, prompt, validation_function, user_input):
       
       start_time=time.time()
       max_retriess=3
@@ -60,16 +61,26 @@ def run_test_case(client, prompt, validation_function):
       validation_errors=[]
       error_type="None"
       test_status="failed"
+      max_model_callss=7
+      model_calls=0
+      test_score=None
 
       while retries < max_retriess:
                         
+                        if model_calls >= max_model_callss:
+                              logger.debug(f"Max model calls reached: {model_calls}")    
+                              raise Exception(f"Max model calls reached: {model_calls}")
+                        model_calls+=1
+
                         try:
-                              raw_response = client.api_call(prompt)
+                                    raw_response = client.api_call(prompt)
                         except Exception:
-                              retries += 1
-                              logger.debug(f"Try {retries} failed, model error.")
-                              error_type = "MODEL_ERROR"
-                              continue
+                                    retries += 1
+                                    logger.debug(f"Try {retries} failed, model error.")
+                                    error_type = "MODEL_ERROR"
+                                    continue
+
+
 
                         cleaner_status, json_text= clean_response(raw_response)
                         
@@ -83,6 +94,7 @@ def run_test_case(client, prompt, validation_function):
                               validation_passed, validation_errors= validation_function(parsed_data)
                               if validation_passed:
                                     test_status="passed"
+                                    test_score=get_score(parsed_data,user_input)
                                     error_type=None
                                     break
                               else:
@@ -100,13 +112,13 @@ def run_test_case(client, prompt, validation_function):
       duration=end_time-start_time
       duration=f"{duration:.2f}"
 
-      return test_status, parsed_data, duration, error_type, retries, validation_errors
+      return test_status, parsed_data, duration, error_type, retries, validation_errors, model_calls,test_score
 
-def process_test_results(test_status,test_results,session,mode, user_input, retries, error_type,validation_errors, duration,parsed_data, provider):
+def process_test_results(test_status,test_results,session,mode, user_input, retries, error_type,validation_errors, duration,parsed_data, provider, model_calls, fallback, test_score):
       
-      logger.info(f"Test - {test_status}")
 
-      test_results.append({"status":test_status,"retriess":retries,"error_type":error_type,"errors":validation_errors,"duration":duration,"provider":provider})
+      logger.info(f"Test - {test_status}")
+      test_results.append({"status":test_status,"retries":retries,"error_type":error_type,"errors":validation_errors,"duration":duration,"quality":test_score,"provider":provider,"calls":model_calls,"fallback":fallback})
       session.update({"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
       logger.info(f" Test is finished.")
 
@@ -115,8 +127,6 @@ def finalize_test_run(ERROR_COUNTS,mode,test_results,session):
 
       for err, count in ERROR_COUNTS.items():
             logger.info(f"{err}: {count}")
-
-
 
       save_results(test_results, mode)
       save_session(session)
@@ -152,3 +162,27 @@ def convert_voice_to_text(audio_file):
     except Exception as e:
         logger.error(f"Converting speech to text filed: {e}")
         raise
+    
+def get_score(parsed_data, user_input):
+    goal = parsed_data.get("goal", "")
+    seq = difflib.SequenceMatcher(None, user_input.lower(), goal.lower())
+    goal_score = seq.ratio()
+
+    total_pros = sum(len(parsed_data["pros_cons"][opt]["pros"]) for opt in parsed_data["options"])
+    total_cons = sum(len(parsed_data["pros_cons"][opt]["cons"]) for opt in parsed_data["options"])
+
+    if (total_pros + total_cons) == 0:
+        pros_score = 0
+    else:
+        pros_score = total_pros / (total_pros + total_cons)
+
+    final_score = (goal_score + pros_score) / 2
+
+    if final_score > 0.7:
+        return "great"
+    elif final_score >= 0.4:
+        return "good"
+    else:
+        return "bad"
+
+

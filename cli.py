@@ -17,37 +17,29 @@ def get_cli_args():
 def default_route(mode):
 
       test_results,session, ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode=init_test_case(mode)
-
+      fallback="no"
       user_input=USER_INPUT
             
       prompt=prepare_test_case(user_input,input_based_on_mode, mode)
 
-      test_status, parsed_data, duration, error_type, number_of_tries_primary_provider, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+      test_status, parsed_data, duration, error_type, number_of_tries, validation_errors, model_calls,test_score = run_test_case(primary_client, prompt, validate_response_default, user_input)
       provider=PRIMARY_MODEL_PROVIDER
-      number_of_tries=number_of_tries_primary_provider
+
       if test_status=="failed":
-                  logger.info(f"Test with {PRIMARY_MODEL_PROVIDER} failed due to {error_type} after {number_of_tries_primary_provider} tries, trying with {SECONDARY_MODEL_PROVIDER}")
-                  test_status, parsed_data, duration, error_type, number_of_tries_secondary_provider, validation_errors=run_test_case(secondary_client, prompt, validate_response_default)
-                  number_of_tries=number_of_tries_primary_provider+number_of_tries_secondary_provider
-                  provider=SECONDARY_MODEL_PROVIDER
+            logger.info(f"Test with {PRIMARY_MODEL_PROVIDER} failed due to {error_type} after {number_of_tries} tries, trying with {SECONDARY_MODEL_PROVIDER}")
+            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors,model_calls,test_score=run_test_case(secondary_client, prompt, validate_response_default,user_input)
+            provider=SECONDARY_MODEL_PROVIDER
+            fallback="yes"
+            if error_type:
+                        ERROR_COUNTS[error_type] += 1
 
-
-      if parsed_data:
-                  print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
-                  print("====== CATEGORY ======\n",parsed_data.get("category"), "\n" )
-                  print("====== OPTIONS ======\n",parsed_data.get("options"), "\n" )
-                  print("====== LIMITATIONS ======\n",parsed_data.get("constraints"), "\n" )
-                  print("====== PROS AND CONS ======\n",parsed_data.get("pros_cons"), "\n" )
-                  print("====== NEXT STEPS ======\n",parsed_data.get("next_steps"), "\n" )
-                  print(parsed_data.get("cheer"), "\n" )
-
-      process_test_results(test_status,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data, provider)
-
+                  
+      process_test_results(test_status,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data, provider, model_calls,fallback,test_score)
       if error_type:
-                  ERROR_COUNTS[error_type] += 1
+                        ERROR_COUNTS[error_type] += 1
 
       finalize_test_run(ERROR_COUNTS,mode,test_results,session)
-
+             
 
 def function_summary(mode):
 
@@ -59,14 +51,14 @@ def function_summary(mode):
             
       prompt=prepare_test_case(user_input,input_based_on_mode, mode)
             
-      test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+      test_status, parsed_data, duration, error_type, number_of_tries, validation_errors,model_calls = run_test_case(primary_client, prompt, validate_response_default)
             
       if parsed_data:
                   print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
                   print("====== CATEGORY ======\n",parsed_data.get("category"), "\n" )
 
 
-      process_test_results(test_status,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER)
+      process_test_results(test_status,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER,model_calls)
             
       if error_type:
             ERROR_COUNTS[error_type] += 1
@@ -82,7 +74,7 @@ def function_voice(mode):
             
       prompt=prepare_test_case(user_input,input_based_on_mode, mode)
 
-      test_status, parsed_data, duration, error_type, number_of_tries, validation_errors = run_test_case(primary_client, prompt, validate_response_default)
+      test_status, parsed_data, duration, error_type, number_of_tries, validation_errors,model_calls = run_test_case(primary_client, prompt, validate_response_default)
       if parsed_data:
                   print("====== GOAL ======\n",parsed_data.get("goal"), "\n" )
                   print("====== CATEGORY ======\n",parsed_data.get("category"), "\n" )
@@ -93,7 +85,7 @@ def function_voice(mode):
                   print(parsed_data.get("cheer"), "\n" )
 
 
-      process_test_results(test_status,test_results, session, mode, user_input, number_of_tries, error_type, validation_errors, duration, parsed_data, PRIMARY_MODEL_PROVIDER)            
+      process_test_results(test_status,test_results, session, mode, user_input, number_of_tries, error_type, validation_errors, duration, parsed_data, PRIMARY_MODEL_PROVIDER, model_calls)            
               
       if error_type:
             ERROR_COUNTS[error_type] += 1

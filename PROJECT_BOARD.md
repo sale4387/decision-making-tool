@@ -57,50 +57,6 @@ https://packaging.python.org/en/latest/tutorials/packaging-projects/
 
 ## This Sprint
 
-## TASK-028 – Evaluation Layer v2
-
-Goal
-Improve evaluation by measuring output quality, not just pass/fail.
-
-Problem
-Current system only validates structure and basic correctness, but does not assess quality or usefulness of model outputs.
-
-Acceptance Criteria
-
-- Basic scoring system implemented (e.g. 1–5 or pass/partial/fail)
-- Ability to evaluate output quality based on simple rules
-- Evaluation results stored alongside existing test results
-- Optional comparison between primary and fallback model outputs
-- Summary includes quality-related metrics
-
-Learning Objective
-
-- Understand evaluation beyond validation
-- Learn how to measure AI output quality
-- Practice building simple scoring systems
-
-Subtasks
-
-[x] Subtask 1 – Define scoring rules
-Create simple rules to evaluate output quality
-
-[] Subtask 2 – Implement scoring
-Apply scoring logic to parsed model output
-
-[] Subtask 3 – Store results
-Extend test_results to include quality scores
-
-[] Subtask 4 – Compare outputs (optional)
-Compare primary vs fallback model results
-
-[] Subtask 5 – Integrate
-Ensure evaluation layer works with existing pipeline
-
-References
-
-Evaluation basics
-https://platform.openai.com/docs/guides/evaluation
-
 ---
 
 ## In Progress
@@ -1521,3 +1477,94 @@ Ensure retry, cleaner, and fallback work in single-run mode
 Confirm successful execution, logging, and persistence for single input
 
 ---
+
+## TASK-028 – Evaluation Layer v2
+
+Goal
+Improve evaluation by measuring output quality, not just pass/fail.
+
+Problem
+Current system only validates structure and basic correctness, but does not assess quality or usefulness of model outputs.
+
+Acceptance Criteria
+
+- Basic scoring system implemented (e.g. 1–5 or pass/partial/fail)
+- Ability to evaluate output quality based on simple rules
+- Evaluation results stored alongside existing test results
+- Optional comparison between primary and fallback model outputs
+- Summary includes quality-related metrics
+
+Learning Objective
+
+- Understand evaluation beyond validation
+- Learn how to measure AI output quality
+- Practice building simple scoring systems
+
+Subtasks
+
+[x] Subtask 1 – Define scoring rules
+Create simple rules to evaluate output quality
+
+[x] Subtask 2 – Implement scoring
+Apply scoring logic to parsed model output
+
+[x] Subtask 3 – Store results
+Extend test_results to include quality scores
+
+[x] Subtask 5 – Integrate
+Ensure evaluation layer works with existing pipeline
+
+References
+
+Evaluation basics
+https://platform.openai.com/docs/guides/evaluation
+
+---
+
+## TASK-032 – Cost Control & Usage Limits
+
+Goal  
+Prevent unexpected API costs by limiting model usage and enforcing simple budget controls.
+
+Problem  
+The system can make repeated model calls (retries, fallback), which increases cost and may lead to provider blocking.
+
+User  
+Developer of the solution
+
+Metrics  
+Number of model calls per run stays within defined limits
+
+Tradeoff  
+Strict limits may stop execution early or reduce quality, but ensure predictable cost
+
+Acceptance Criteria
+
+- Max number of model calls per run implemented
+- Retries and fallback count toward total call limit
+- System stops or skips fallback when limit is reached
+- Basic call count is logged per run
+- Works consistently across all modes
+
+Learning Objective
+
+- Understand cost control in AI pipelines
+- Learn to track and limit external API usage
+- Practice building safeguards for production systems
+
+Subtasks
+
+[x] Subtask 1 – Call counter  
+Track total number of model calls per run
+
+[x] Subtask 2 – Enforce limit  
+Stop further calls when max limit is reached
+
+[x] Subtask 3 – Integrate with retry/fallback  
+Ensure retries and fallback respect the same limit
+
+[x] Subtask 4 – Logging  
+Log total calls per run and provider used
+
+[x] Subtask 5 – Validation  
+Test that limits prevent excessive usage without breaking flow
