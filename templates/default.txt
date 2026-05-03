@@ -19,7 +19,7 @@ Rules:
 - Do NOT add any text outside JSON  
 - Ensure the JSON is syntactically valid  
 
-If you cannot follow the format, return {} only.
+If you cannot follow the format, return a complete JSON with empty values.
 
 User input:
 {user_input}

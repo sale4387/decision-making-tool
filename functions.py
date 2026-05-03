@@ -183,4 +183,22 @@ def get_score(parsed_data, user_input):
     else:
         return "bad"
 
+RATE_LIMIT = 10  # requests
+WINDOW = 60      # seconds
 
+requests_log = {}
+
+def is_rate_limited(ip):
+    now = time()
+
+    if ip not in requests_log:
+        requests_log[ip] = []
+
+    # keep only recent requests
+    requests_log[ip] = [t for t in requests_log[ip] if now - t < WINDOW]
+
+    if len(requests_log[ip]) >= RATE_LIMIT:
+        return True
+
+    requests_log[ip].append(now)
+    return False

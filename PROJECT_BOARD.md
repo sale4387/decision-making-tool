@@ -2,102 +2,6 @@
 
 ## Backlog
 
-## TASK-029 – Data Contracts & Validation
-
-Goal  
-Ensure consistent, predictable data structure across the system.
-
-Problem  
-Even with validation, inconsistencies in structure or missing keys can break downstream logic or reduce reliability.
-
-User  
-Developer of the solution
-
-Metrics  
-% of outputs that conform to defined schema without manual fixes
-
-Tradeoff  
-Stricter validation may increase failures but improves reliability
-
-Acceptance Criteria
-
-- All required keys are present in output
-- Validation rules correctly enforce min/max constraints
-- Validation errors are clearly logged and categorized
-- Validation works consistently across all modes
-- System handles invalid outputs without crashing
-
-Learning Objective
-
-- Understand data contracts in AI pipelines
-- Learn to enforce schema consistency
-- Practice defensive validation design
-
-Subtasks
-
-[] Subtask 1 – Define schema  
-Finalize required keys and structure
-
-[] Subtask 2 – Enforce validation rules  
-Ensure rules apply correctly to all fields
-
-[] Subtask 3 – Error handling  
-Improve validation error clarity and logging
-
-[] Subtask 4 – Integration  
-Ensure validation fits cleanly in pipeline
-
-[] Subtask 5 – Testing  
-Validate system behavior on invalid outputs
-
-## TASK-030 – Performance Basics
-
-Goal  
-Improve performance visibility and basic efficiency of the system.
-
-Problem  
-Current system runs without clear insight into performance bottlenecks or execution cost per run.
-
-User  
-Developer of the solution
-
-Metrics  
-Average duration per run and per model call
-
-Tradeoff  
-Adds logging and measurement overhead but improves optimization ability
-
-Acceptance Criteria
-
-- Execution time per run is measured and logged
-- Model call duration is tracked
-- Retry impact on performance is visible
-- Logs provide enough detail to identify slow components
-- No major performance regression introduced
-
-Learning Objective
-
-- Understand performance measurement in AI systems
-- Learn to identify bottlenecks
-- Practice lightweight optimization
-
-Subtasks
-
-[] Subtask 1 – Timing  
-Track duration for model calls and full run
-
-[] Subtask 2 – Logging  
-Log performance metrics clearly
-
-[] Subtask 3 – Retry impact  
-Measure effect of retries on duration
-
-[] Subtask 4 – Analysis  
-Review logs to identify bottlenecks
-
-[] Subtask 5 – Optimization  
-Apply simple improvements if needed
-
 ## TASK-010 – Packaging the Tool
 
 Goal
@@ -1758,3 +1662,103 @@ References
 
 Streamlit docs
 https://docs.streamlit.io/
+
+---
+
+## TASK-029 – Data Contracts & Validation
+
+Goal  
+Ensure consistent, predictable data structure across the system.
+
+Problem  
+Even with validation, inconsistencies in structure or missing keys can break downstream logic or reduce reliability.
+
+User  
+Developer of the solution
+
+Metrics  
+% of outputs that conform to defined schema without manual fixes
+
+Tradeoff  
+Stricter validation may increase failures but improves reliability
+
+Acceptance Criteria
+
+- All required keys are present in output
+- Validation rules correctly enforce min/max constraints
+- Validation errors are clearly logged and categorized
+- Validation works consistently across all modes
+- System handles invalid outputs without crashing
+
+Learning Objective
+
+- Understand data contracts in AI pipelines
+- Learn to enforce schema consistency
+- Practice defensive validation design
+
+Subtasks
+
+[x] Subtask 1 – Define schema  
+Finalize required keys and structure
+
+[x] Subtask 2 – Enforce validation rules  
+Ensure rules apply correctly to all fields
+
+[x] Subtask 3 – Error handling  
+Improve validation error clarity and logging
+
+[x] Subtask 4 – Integration  
+Ensure validation fits cleanly in pipeline
+
+[x] Subtask 5 – Testing  
+Validate system behavior on invalid outputs
+
+---
+
+## TASK-030 – Performance Basics
+
+Goal  
+Improve performance visibility and basic efficiency of the system.
+
+Problem  
+Current system runs without clear insight into performance bottlenecks or execution cost per run.
+
+User  
+Developer of the solution
+
+Metrics  
+Average duration per run and per model call
+
+Tradeoff  
+Adds logging and measurement overhead but improves optimization ability
+
+Acceptance Criteria
+
+- Execution time per run is measured and logged
+- Model call duration is tracked
+- Retry impact on performance is visible
+- Logs provide enough detail to identify slow components
+- No major performance regression introduced
+
+Learning Objective
+
+- Understand performance measurement in AI systems
+- Learn to identify bottlenecks
+- Practice lightweight optimization
+
+Subtasks
+
+[x] Subtask 1 – Timing  
+Track duration for model calls and full run
+
+[x] Subtask 2 – Logging  
+Log performance metrics clearly
+
+[x] Subtask 3 – Retry impact  
+Measure effect of retries on duration
+
+[x] Subtask 4 – Analysis  
+Review logs to identify bottlenecks
+
+[x] Subtask 5 – Optimization  
+Apply simple improvements if needed
