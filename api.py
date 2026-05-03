@@ -1,0 +1,71 @@
+from fastapi import FastAPI
+from pydantic import BaseModel
+from dotenv import load_dotenv
+load_dotenv()
+from functions import prepare_test_case, init_test_case, run_test_case, process_test_results, finalize_test_run
+from config import PRIMARY_MODEL_PROVIDER, SECONDARY_MODEL_PROVIDER
+from validation import validate_response_default
+
+class Request(BaseModel):
+    user_input: str
+
+app = FastAPI()
+
+@app.get("/")
+def root():
+    return {"message": "API is running"}
+
+@app.post("/decision")
+def decision(request:Request):
+
+    isFallback="no"
+    test_results,session,primary_client, secondary_client, input_based_on_mode=init_test_case("default")
+    prompt=prepare_test_case(request.user_input, input_based_on_mode,"default")
+    test_status, parsed_data, duration, error_type, number_of_tries, validation_errors, model_calls,test_score = run_test_case(primary_client, prompt, validate_response_default, request.user_input)
+    provider=PRIMARY_MODEL_PROVIDER
+    primary_error_type=None
+    primary_validation_error=None
+    primary_retries=None
+
+
+    if test_status=="failed":
+            primary_error_type=error_type
+            primary_validation_error=validation_errors
+            primary_retries=number_of_tries
+            test_status, parsed_data, duration, error_type, number_of_tries, validation_errors, model_calls,test_score = run_test_case(secondary_client, prompt, validate_response_default, request.user_input)
+            provider=SECONDARY_MODEL_PROVIDER
+            isFallback="yes"
+
+            if test_status=="failed":
+                 parsed_data=None
+
+    process_test_results(test_status,test_results,session,"default", request.user_input, number_of_tries, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER,model_calls)
+    finalize_test_run("default",test_results,session)
+
+    return {
+              "data":parsed_data,
+              "status":test_status,
+              "provider":provider,
+              "duration":duration,
+              "retries":number_of_tries,
+              "error":error_type,
+              "errors":validation_errors,
+              "calls":model_calls,
+              "quality":test_score,
+              "fallback":isFallback,
+              "primary":{
+                   "error":primary_error_type,
+                   "errors":primary_validation_error,
+                   "retries":primary_retries
+              }
+
+              }
+
+                   
+              
+
+
+
+
+
+    

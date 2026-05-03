@@ -3,13 +3,13 @@ Return ONLY valid JSON. No explanations, no markdown, no text before or after.
 The response must be a single JSON object with the following keys:
 
 goal: string  
-constraints: array of strings (3–6 items)  
+constraints: array of strings (1–4 items)  
 options: array of strings (2–4 items)  
 pros_cons: object where each key matches an option from "options"  
   - each option must contain:
-    pros: array of strings (3–5 items)  
-    cons: array of strings (3–5 items)  
-next_steps: array of strings (3–5 items)  
+    pros: array of strings (1–5 items)  
+    cons: array of strings (1–5 items)  
+next_steps: array of strings (2–6 items)  
 category: string (one of: simple, complex, constrained, ambiguous, messy, edge)  
 cheer: string (short encouraging message)
 

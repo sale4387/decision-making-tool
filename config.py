@@ -48,7 +48,7 @@ required_keys ={
 
 validation_rules = {
     "constraints": (1,4),
-    "options": (2,5),
+    "options": (2,4),
     "pros": (1,5),
     "cons": (1,5),
     "next_steps": (2,6)

@@ -29,12 +29,7 @@ def init_test_case(mode):
 
       test_results=[]
       session={}
-      ERROR_COUNTS = {
-      "MODEL_ERROR": 0,
-      "CLEANER_ERROR": 0,
-      "PARSE_ERROR": 0,
-      "VALIDATION_ERROR": 0
-      }
+ 
 
       primary_model_name=MODEL_MAP[PRIMARY_MODEL_PROVIDER]
       primary_client_class = PROVIDER_MAP.get(PRIMARY_MODEL_PROVIDER)
@@ -50,7 +45,7 @@ def init_test_case(mode):
       
       input_based_on_mode =get_mode_input(mode)
 
-      return test_results,session,ERROR_COUNTS,primary_client, secondary_client, input_based_on_mode
+      return test_results,session,primary_client, secondary_client, input_based_on_mode
 
 def run_test_case(client, prompt, validation_function, user_input):
       
@@ -122,11 +117,8 @@ def process_test_results(test_status,test_results,session,mode, user_input, retr
       session.update({"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
       logger.info(f" Test is finished.")
 
-def finalize_test_run(ERROR_COUNTS,mode,test_results,session):
+def finalize_test_run(mode,test_results,session):
       
-
-      for err, count in ERROR_COUNTS.items():
-            logger.info(f"{err}: {count}")
 
       save_results(test_results, mode)
       save_session(session)

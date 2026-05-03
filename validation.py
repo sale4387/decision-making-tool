@@ -6,18 +6,18 @@ def validate_response_default(parsed_data):
 
     for key in required_keys["default"]:
         if key not in parsed_data:
-            error_log_message.append(f"A key is missing from parsed data.\n")
+            error_log_message.append(f"A key is missing from parsed data.")
             return False, error_log_message
 
 
     if not min(validation_rules["constraints"]) <= len(parsed_data["constraints"]) <= max(validation_rules["constraints"]):
-             error_log_message.append(f"Number of constraints is wrong.\n")
+             error_log_message.append(f"Number of constraints is wrong.")
 
     if not min(validation_rules["options"]) <= len(parsed_data["options"]) <= max(validation_rules["options"]):
-             error_log_message.append(f"Number of options is wrong.\n")
+             error_log_message.append(f"Number of options is wrong.")
 
     if not min(validation_rules["next_steps"]) <= len(parsed_data["next_steps"]) <= max(validation_rules["next_steps"]):
-             error_log_message.append(f"Number of next steps is wrong.\n")
+             error_log_message.append(f"Number of next steps is wrong.")
 
     for opt in parsed_data["pros_cons"]:
           
@@ -45,14 +45,14 @@ def validate_response_partial(parsed_data):
 
       for key in required_keys["plan"]:
             if key not in parsed_data:
-                  error_log_message.append(f"A key is missing from parsed data.\n")
+                  error_log_message.append(f"A key is missing from parsed data.")
                   return False, error_log_message
 
       if not min(validation_rules["options"]) <= len(parsed_data["options"]) <= max(validation_rules["options"]):
-            error_log_message.append(f"Number of options is wrong.\n")
+            error_log_message.append(f"Number of options is wrong.")
 
       if not min(validation_rules["next_steps"]) <= len(parsed_data["next_steps"]) <= max(validation_rules["next_steps"]):
-            error_log_message.append(f"Number of next steps is wrong.\n")
+            error_log_message.append(f"Number of next steps is wrong.")
 
       if error_log_message:
             return False, error_log_message

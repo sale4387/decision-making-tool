@@ -32,11 +32,11 @@ def default_route(mode):
             fallback="yes"
             if error_type:
                         ERROR_COUNTS[error_type] += 1
-
-                  
-      process_test_results(test_status,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data, provider, model_calls,fallback,test_score)
       if error_type:
                         ERROR_COUNTS[error_type] += 1
+                  
+      process_test_results(test_status,test_results,session,mode, user_input, number_of_tries, error_type,validation_errors, duration,parsed_data, provider, model_calls,fallback,test_score)
+
 
       finalize_test_run(ERROR_COUNTS,mode,test_results,session)
              
