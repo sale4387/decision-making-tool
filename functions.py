@@ -6,8 +6,7 @@ from model import HFClient, GEMINIClient
 import logging
 from persistence import save_results, save_session, retrieve_session
 from cleaner import clean_response
-import torch
-from transformers import pipeline
+##from transformers import pipeline
 import difflib
 
 
@@ -142,18 +141,18 @@ def prepare_test_case(user_input, input_based_on_mode, mode):
             prompt=input_based_on_mode.replace("{user_input}", user_input).replace("{previous_inputs}",previous_inputs_text).replace("{previous_responses}", previous_outputs_text)
             return prompt
 
-def convert_voice_to_text(audio_file):
-    try:
-        speech_to_text = pipeline(
+##def convert_voice_to_text(audio_file):
+    ##try:
+       ## speech_to_text = pipeline(
             task="automatic-speech-recognition",
             model="openai/whisper-tiny",
             device=-1
-        )
-        converted_text= speech_to_text(audio_file)["text"]
-        return converted_text
-    except Exception as e:
-        logger.error(f"Converting speech to text filed: {e}")
-        raise
+       ## )
+       ## converted_text= speech_to_text(audio_file)["text"]
+        ##return converted_text
+    ##except Exception as e:
+        ##logger.error(f"Converting speech to text filed: {e}")
+       ## raise
     
 def get_score(parsed_data, user_input):
     goal = parsed_data.get("goal", "")
