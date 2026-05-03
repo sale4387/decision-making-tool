@@ -84,7 +84,15 @@ def run_test_case(client, prompt, validation_function, user_input):
                               continue
                         try:
                               parsed_data=json.loads(json_text)
-                              validation_passed, validation_errors= validation_function(parsed_data)
+                              try:
+                                    validation_passed, validation_errors= validation_function(parsed_data)
+                              except Exception:
+                                     retries+=1
+                                     logger.debug(f"Try {retries} failed, validation error(s).")
+                                     error_type="VALIDATION_ERROR"
+                                     continue
+
+
                               if validation_passed:
                                     test_status="passed"
                                     test_score=get_score(parsed_data,user_input)
