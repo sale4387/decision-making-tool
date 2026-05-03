@@ -49,3 +49,4 @@
 {"timestamp": "2026-05-03 16:27:48", "mode": "default", "results": [{"status": "passed", "retries": 1, "error_type": null, "errors": [], "duration": "2.11", "quality": "good", "provider": "google", "calls": 1, "fallback": "yes"}]}
 {"timestamp": "2026-05-03 16:28:30", "mode": "default", "results": [{"status": "passed", "retries": 1, "error_type": null, "errors": [], "duration": "1.29", "quality": "bad", "provider": "google", "calls": 1, "fallback": "yes"}]}
 {"timestamp": "2026-05-03 16:48:36", "mode": "default", "results": [{"status": "passed", "retries": 1, "error_type": null, "errors": [], "duration": "1.38", "quality": "bad", "provider": "google", "calls": 1, "fallback": "yes"}]}
+{"timestamp": "2026-05-03 22:46:53", "mode": "default", "results": [{"status": "passed", "retries": 1, "error_type": null, "errors": [], "duration": "1.91", "quality": "good", "provider": "huggingface", "calls": 1, "fallback": "yes", "version": "v3 - UI and API"}]}

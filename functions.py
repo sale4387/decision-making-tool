@@ -189,7 +189,7 @@ WINDOW = 60      # seconds
 requests_log = {}
 
 def is_rate_limited(ip):
-    now = time()
+    now = time.time()
 
     if ip not in requests_log:
         requests_log[ip] = []
