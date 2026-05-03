@@ -72,7 +72,6 @@ flashlight==0.1.1
 flint==0.0.1
 flute==0.2.0
 flytekit==1.16.19
-foo==.1
 Foundation==0.1.0a0.dev1
 fqdn==1.5.1
 fugashi==1.5.2
