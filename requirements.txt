@@ -4,5 +4,5 @@ pydantic
 python-dotenv
 requests
 huggingface_hub
-google-generativeai
+google-genyi
 streamlit
