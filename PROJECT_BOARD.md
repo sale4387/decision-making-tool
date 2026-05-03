@@ -199,56 +199,6 @@ https://packaging.python.org/en/latest/tutorials/packaging-projects/
 
 ## In Progress
 
-## TASK-023 – Basic UI (Streamlit)
-
-Goal
-Provide a minimal user interface to interact with the system and demonstrate its capabilities.
-
-Problem
-Currently the system is CLI-only, which makes it harder to demo, explain, and use interactively.
-A simple UI improves usability and presentation without adding unnecessary complexity.
-
-Acceptance Criteria
-
-- UI allows user to input text
-- UI triggers model pipeline (same as CLI)
-- UI displays structured output clearly
-- UI integrates with existing system (no duplicated logic)
-- Runs locally with a single command
-- No complex frontend (use simple framework)
-
-Learning Objective
-
-- Understand how to expose backend systems via UI
-- Learn basic integration between UI and logic layer
-- Practice keeping UI thin (no business logic inside UI)
-- Improve project presentation for demos/interviews
-
-Subtasks
-
-[x] Subtask 1 – Choose framework
-Use Streamlit (simple, fast, Python-based).
-
-[x] Subtask 2 – Create UI file
-Create `ui.py` (or similar entry point).
-
-[ ] Subtask 3 – Add input field
-Allow user to enter text (textarea or input box).
-
-[ ] Subtask 4 – Trigger pipeline
-Call existing logic (do NOT duplicate code).
-
-[ ] Subtask 5 – Display output
-Show model response in readable format.
-
-[ ] Subtask 6 – Run and test
-Ensure UI runs with single command and works end-to-end.
-
-References
-
-Streamlit docs
-https://docs.streamlit.io/
-
 ---
 
 ## Project structure best practices
@@ -1756,3 +1706,55 @@ Return meaningful errors in API
 
 [x] Subtask 5 – Testing  
 Test API with sample requests
+
+---
+
+## TASK-023 – Basic UI (Streamlit)
+
+Goal
+Provide a minimal user interface to interact with the system and demonstrate its capabilities.
+
+Problem
+Currently the system is CLI-only, which makes it harder to demo, explain, and use interactively.
+A simple UI improves usability and presentation without adding unnecessary complexity.
+
+Acceptance Criteria
+
+- UI allows user to input text
+- UI triggers model pipeline (same as CLI)
+- UI displays structured output clearly
+- UI integrates with existing system (no duplicated logic)
+- Runs locally with a single command
+- No complex frontend (use simple framework)
+
+Learning Objective
+
+- Understand how to expose backend systems via UI
+- Learn basic integration between UI and logic layer
+- Practice keeping UI thin (no business logic inside UI)
+- Improve project presentation for demos/interviews
+
+Subtasks
+
+[x] Subtask 1 – Choose framework
+Use Streamlit (simple, fast, Python-based).
+
+[x] Subtask 2 – Create UI file
+Create `ui.py` (or similar entry point).
+
+[x] Subtask 3 – Add input field
+Allow user to enter text (textarea or input box).
+
+[x] Subtask 4 – Trigger pipeline
+Call existing logic (do NOT duplicate code).
+
+[x] Subtask 5 – Display output
+Show model response in readable format.
+
+[x] Subtask 6 – Run and test
+Ensure UI runs with single command and works end-to-end.
+
+References
+
+Streamlit docs
+https://docs.streamlit.io/
