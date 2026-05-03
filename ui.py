@@ -12,6 +12,10 @@ st.subheader("Your situation")
 user_input = ""
 
 
+user_input = st.text_area("Describe your situation:", height=150)
+
+
+
 # --- Action button ---
 if st.button("🚀 Help Me Decide"):
 
