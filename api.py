@@ -39,7 +39,7 @@ def decision(request:Request):
             if test_status=="failed":
                  parsed_data=None
 
-    process_test_results(test_status,test_results,session,"default", request.user_input, number_of_tries, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER,model_calls)
+    process_test_results(test_status,test_results,session,"default", request.user_input, number_of_tries, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER,model_calls,isFallback,test_score)
     finalize_test_run("default",test_results,session)
 
     return {

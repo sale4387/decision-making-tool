@@ -26,7 +26,7 @@ if st.button("🚀 Help Me Decide"):
 
             # --- CALL YOUR API HERE ---
             response = requests.post(
-                "http://127.0.0.1:8000/decision",
+                "https://decision-making-tool-rdtx.onrender.com/decision",
                 json={"user_input": user_input}
             )
 
