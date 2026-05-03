@@ -199,62 +199,6 @@ https://packaging.python.org/en/latest/tutorials/packaging-projects/
 
 ## In Progress
 
-## TASK-031 – API Layer
-
-Goal  
-Expose system functionality via a simple API interface.
-
-Problem  
-Current system is CLI-based and not easily reusable by external applications.
-
-User  
-Developer / external consumer of the API
-
-Metrics  
-Ability to call system via API and receive valid response
-
-Tradeoff  
-Adds complexity but enables integration and real-world use
-
-Acceptance Criteria
-
-- API endpoint created for main functionality
-- Input is accepted via request (JSON/text)
-- Output returned in JSON format
-- Error handling works via API responses
-- API uses existing pipeline without breaking logic
-
-Learning Objective
-
-- Understand API design basics
-- Learn to expose AI functionality as a service
-- Practice integration-ready architecture
-
-Subtasks
-
-[] Subtask 1 – Setup  
-Create basic API (e.g. FastAPI)
-
-[] Subtask 2 – Endpoint  
-Implement endpoint for decision flow
-
-[] Subtask 3 – Integration  
-Connect API to existing pipeline
-
-[] Subtask 4 – Error handling  
-Return meaningful errors in API
-
-[] Subtask 5 – Testing  
-Test API with sample requests
-
----
-
-## Project structure best practices
-
----
-
-## Blocked
-
 ## TASK-023 – Basic UI (Streamlit)
 
 Goal
@@ -304,6 +248,14 @@ References
 
 Streamlit docs
 https://docs.streamlit.io/
+
+---
+
+## Project structure best practices
+
+---
+
+## Blocked
 
 ---
 
@@ -1754,3 +1706,53 @@ Log total calls per run and provider used
 
 [x] Subtask 5 – Validation  
 Test that limits prevent excessive usage without breaking flow
+
+---
+
+## TASK-031 – API Layer
+
+Goal  
+Expose system functionality via a simple API interface.
+
+Problem  
+Current system is CLI-based and not easily reusable by external applications.
+
+User  
+Developer / external consumer of the API
+
+Metrics  
+Ability to call system via API and receive valid response
+
+Tradeoff  
+Adds complexity but enables integration and real-world use
+
+Acceptance Criteria
+
+- API endpoint created for main functionality
+- Input is accepted via request (JSON/text)
+- Output returned in JSON format
+- Error handling works via API responses
+- API uses existing pipeline without breaking logic
+
+Learning Objective
+
+- Understand API design basics
+- Learn to expose AI functionality as a service
+- Practice integration-ready architecture
+
+Subtasks
+
+[x] Subtask 1 – Setup  
+Create basic API (e.g. FastAPI)
+
+[x] Subtask 2 – Endpoint  
+Implement endpoint for decision flow
+
+[x] Subtask 3 – Integration  
+Connect API to existing pipeline
+
+[x] Subtask 4 – Error handling  
+Return meaningful errors in API
+
+[x] Subtask 5 – Testing  
+Test API with sample requests
