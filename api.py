@@ -5,6 +5,7 @@ load_dotenv()
 from functions import prepare_test_case, init_test_case, run_test_case, process_test_results, finalize_test_run
 from config import PRIMARY_MODEL_PROVIDER, SECONDARY_MODEL_PROVIDER
 from validation import validate_response_default
+import time
 
 class Request(BaseModel):
     user_input: str
@@ -17,7 +18,7 @@ def root():
 
 @app.post("/decision")
 def decision(request:Request):
-
+    start_time = time.time()
     isFallback="no"
     test_results,session,primary_client, secondary_client, input_based_on_mode=init_test_case("default")
     prompt=prepare_test_case(request.user_input, input_based_on_mode,"default")
@@ -41,7 +42,8 @@ def decision(request:Request):
 
     process_test_results(test_status,test_results,session,"default", request.user_input, number_of_tries, error_type,validation_errors, duration,parsed_data,PRIMARY_MODEL_PROVIDER,model_calls,isFallback,test_score)
     finalize_test_run("default",test_results,session)
-
+    end_time = time.time()
+    total_duration = f"{end_time - start_time:.2f}"
     return {
               "data":parsed_data,
               "status":test_status,
@@ -53,6 +55,7 @@ def decision(request:Request):
               "calls":model_calls,
               "quality":test_score,
               "fallback":isFallback,
+              "total_duration":total_duration,
               "primary":{
                    "error":primary_error_type,
                    "errors":primary_validation_error,

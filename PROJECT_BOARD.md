@@ -98,54 +98,6 @@ Review logs to identify bottlenecks
 [] Subtask 5 – Optimization  
 Apply simple improvements if needed
 
-## TASK-034 – Context Handling (Session Relevance)
-
-Goal  
-Improve relevance of previous session data used in prompts.
-
-Problem  
-Current approach uses last 3 sessions blindly, which may introduce irrelevant or noisy context.
-
-User  
-Developer of the solution
-
-Metrics  
-Improved relevance of outputs when using previous context
-
-Tradeoff  
-More logic required vs simple approach
-
-Acceptance Criteria
-
-- Current session retrieval logic reviewed
-- Irrelevant context is reduced or filtered
-- System does not degrade when context is removed
-- Context usage is optional and safe
-- No breaking changes to existing pipeline
-
-Learning Objective
-
-- Understand context handling in AI systems
-- Learn basic relevance filtering strategies
-- Practice improving signal vs noise
-
-Subtasks
-
-[] Subtask 1 – Review  
-Analyze current session usage
-
-[] Subtask 2 – Filtering  
-Implement simple relevance check or limit
-
-[] Subtask 3 – Optional usage  
-Allow running without previous context
-
-[] Subtask 4 – Testing  
-Compare outputs with and without context
-
-[] Subtask 5 – Adjustment  
-Tune logic for best balance
-
 ## TASK-010 – Packaging the Tool
 
 Goal
@@ -206,6 +158,54 @@ https://packaging.python.org/en/latest/tutorials/packaging-projects/
 ---
 
 ## Blocked
+
+## TASK-034 – Context Handling (Session Relevance)
+
+Goal  
+Improve relevance of previous session data used in prompts.
+
+Problem  
+Current approach uses last 3 sessions blindly, which may introduce irrelevant or noisy context.
+
+User  
+Developer of the solution
+
+Metrics  
+Improved relevance of outputs when using previous context
+
+Tradeoff  
+More logic required vs simple approach
+
+Acceptance Criteria
+
+- Current session retrieval logic reviewed
+- Irrelevant context is reduced or filtered
+- System does not degrade when context is removed
+- Context usage is optional and safe
+- No breaking changes to existing pipeline
+
+Learning Objective
+
+- Understand context handling in AI systems
+- Learn basic relevance filtering strategies
+- Practice improving signal vs noise
+
+Subtasks
+
+[] Subtask 1 – Review  
+Analyze current session usage
+
+[] Subtask 2 – Filtering  
+Implement simple relevance check or limit
+
+[] Subtask 3 – Optional usage  
+Allow running without previous context
+
+[] Subtask 4 – Testing  
+Compare outputs with and without context
+
+[] Subtask 5 – Adjustment  
+Tune logic for best balance
 
 ---
 

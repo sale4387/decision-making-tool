@@ -4,7 +4,7 @@ HF_TOKEN=os.getenv("HF_TOKEN")
 PRIMARY_MODEL_PROVIDER = "huggingface"
 SECONDARY_MODEL_PROVIDER = "google"
 
-VERSION="v2 - model retries and timeout"
+VERSION="v3 - UI and API"
 
 MODEL_MAP={
     "huggingface":"Qwen/Qwen2.5-1.5B-Instruct:featherless-ai",

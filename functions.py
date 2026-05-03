@@ -47,7 +47,6 @@ def init_test_case(mode):
       return test_results,session,primary_client, secondary_client, input_based_on_mode
 
 def run_test_case(client, prompt, validation_function, user_input):
-      
       start_time=time.time()
       max_retriess=3
       retries =1
@@ -109,11 +108,19 @@ def run_test_case(client, prompt, validation_function, user_input):
       return test_status, parsed_data, duration, error_type, retries, validation_errors, model_calls,test_score
 
 def process_test_results(test_status,test_results,session,mode, user_input, retries, error_type,validation_errors, duration,parsed_data, provider, model_calls, fallback, test_score):
-      
+      version=VERSION
+
 
       logger.info(f"Test - {test_status}")
-      test_results.append({"status":test_status,"retries":retries,"error_type":error_type,"errors":validation_errors,"duration":duration,"quality":test_score,"provider":provider,"calls":model_calls,"fallback":fallback})
-      session.update({"mode":mode,"provider":provider,"input":user_input, "output":parsed_data})
+      test_results.append({"status":test_status,"retries":retries,"error_type":error_type,"errors":validation_errors,"duration":duration,"quality":test_score,"provider":provider,"calls":model_calls,"fallback":fallback,"version":version})
+      session.update({
+                  "results": {
+                  "mode": mode,
+                  "provider": provider,
+                  "input": user_input,
+                  "output": parsed_data
+                  }
+                  })
       logger.info(f" Test is finished.")
 
 def finalize_test_run(mode,test_results,session):
