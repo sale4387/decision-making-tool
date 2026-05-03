@@ -8,22 +8,14 @@ st.title("🧠 Help Me Decide")
 # --- Input section ---
 st.subheader("Your situation")
 
-input_mode = st.radio("Choose input type:", ["Text", "Voice"])
 
 user_input = ""
 
-if input_mode == "Text":
-    user_input = st.text_area("Describe your situation:", height=150)
-
-else:
-    audio_file = st.file_uploader("Upload voice recording", type=["wav", "mp3"])
-    if audio_file:
-        st.info("Voice uploaded (processing handled in backend)")
 
 # --- Action button ---
 if st.button("🚀 Help Me Decide"):
 
-    if not user_input and input_mode == "Text":
+    if not user_input:
         st.warning("Please enter some text")
     else:
         with st.spinner("Thinking..."):
