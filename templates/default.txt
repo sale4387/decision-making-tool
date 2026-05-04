@@ -3,7 +3,10 @@ Return ONLY valid JSON. No explanations, no markdown, no text before or after.
 The response must be a single JSON object with the following keys:
 
 goal: string  
-constraints: array of strings (1–4 items)  
+constraints: array of strings (1–4 items). 
+  Definition:
+  Constraints are the limitation which maybe is not set by user in prompt.  If you cannot think of any limitation feel free to return only one item "None".
+
 options: array of strings (2–4 items)  
 pros_cons: object where each key matches an option from "options"  
   - each option must contain:
@@ -18,8 +21,6 @@ Rules:
 - Do NOT include ```json or ```  
 - Do NOT add any text outside JSON  
 - Ensure the JSON is syntactically valid  
-
-If you cannot follow the format, return a complete JSON with empty values.
 
 User input:
 {user_input}

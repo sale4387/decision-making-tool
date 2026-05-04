@@ -53,6 +53,7 @@ def decision(request:Request):
     end_time = time.time()
     total_duration = f"{end_time - start_time:.2f}"
     return {
+              "prompt":prompt,
               "data":parsed_data,
               "status":test_status,
               "provider":provider,

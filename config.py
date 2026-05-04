@@ -7,7 +7,7 @@ SECONDARY_MODEL_PROVIDER = "google"
 VERSION="v3 - UI and API"
 
 MODEL_MAP={
-    "huggingface":"Qwen/Qwen2.5-1.5B-Instruct:featherless-ai",
+    "huggingface":"mistralai/Mistral-7B-Instruct-v0.2:featherless-ai",
     "google":"gemini-3.1-flash-lite-preview"
 }
 
