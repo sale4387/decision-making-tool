@@ -53,12 +53,12 @@ def decision(request:Request):
     end_time = time.time()
     total_duration = f"{end_time - start_time:.2f}"
     return {
-              "prompt":prompt,
+              
               "data":parsed_data,
               "status":test_status,
               "provider":provider,
               "duration":duration,
-              "retries":number_of_tries,
+              "tries":number_of_tries,
               "error":error_type,
               "errors":validation_errors,
               "calls":model_calls,
@@ -69,7 +69,7 @@ def decision(request:Request):
                    "data":primary_parsed_data,
                    "error":primary_error_type,
                    "errors":primary_validation_error,
-                   "retries":primary_retries
+                   "tries":primary_retries
               }
 
               }

@@ -2,110 +2,342 @@
 
 ## Project Name
 
-AI Decision Assistant (Terminal Tool)
+AI Decision Assistant
 
 ---
 
-## Problem
+# Problem
 
-People often struggle to organize complex thoughts when making decisions.
-Information is scattered, emotional context mixes with facts, and it becomes difficult to identify clear next steps.
+People often struggle to organize complex decisions and messy thoughts.
 
-Large language models are very good at transforming unstructured text into structured information, but most tools expose them only through chat interfaces rather than decision-oriented workflows.
+Information is usually:
+
+- emotional
+- incomplete
+- scattered
+- unstructured
+
+Large language models are very good at transforming unstructured text into structured information, but most people interact with them only through generic chat interfaces.
+
+This project explores how to build a small AI system around LLMs that focuses specifically on:
+
+- structured outputs
+- reliability
+- validation
+- practical usability
+
+instead of raw conversational AI.
 
 ---
 
-## Goal
+# Goal
 
-Build a small AI-powered tool that converts messy input into a structured decision framework.
+Build an AI-powered application that converts natural language decision input into structured and validated decision data.
 
-The tool should help users:
+The system should help users:
 
-- clarify their goal
+- clarify goals
 - identify constraints
-- list possible options
-- evaluate pros and cons
-- determine concrete next steps
+- evaluate options
+- compare tradeoffs
+- define next steps
 
-The system should return structured outputs that can be programmatically processed.
+while also demonstrating practical AI engineering patterns such as:
 
----
-
-## Target Users
-
-Primary user:
-
-- the developer of the project (personal productivity tool)
-
-Potential future users:
-
-- people who struggle organizing complex decisions
-- people with high cognitive load or ADHD-style thought patterns
-- professionals exploring options or trade-offs
+- prompt engineering
+- validation
+- retries
+- fallback models
+- structured outputs
+- deployment
+- API/UI integration
 
 ---
 
-## In Scope
+# Final Delivered Product
 
-Features that are part of the current project scope:
+The project evolved significantly during development.
 
-- terminal-based interaction
-- LLM-based reasoning
-- structured JSON output
-- reliable parsing of model responses
-- schema validation
-- prompt versioning
-- basic logging and evaluation
-- simple memory of previous sessions
-- experimentation with AI engineering patterns
+Originally planned:
 
-The project focuses on **engineering reliability of LLM systems**, UI development will come later.
+- terminal-only tool
+- local execution
+- experimentation environment
 
----
+Final MVP shipped:
 
-## Out of Scope
-
-The following are intentionally not part of the project (for now):
-
-- graphical user interface
-- mobile or web applications
-- production hosting
-- user authentication
-- multi-user systems
-- payment systems
-- large-scale infrastructure
-
-The project remains a **local development learning tool** until further notice.
+- FastAPI backend
+- Streamlit frontend
+- deployed web application
+- multi-model architecture
+- validation layer
+- retry/fallback system
+- persistence layer
+- runtime metrics
+- structured JSON API
 
 ---
 
-## Constraints
+# Primary Users
 
-- development time: approximately 2–3 sessions per week
-- minimal spending on external services
-- preference for open or free APIs when possible
-- development environment: Python + terminal
+## Current Primary User
+
+- project developer
+
+Used for:
+
+- learning AI engineering
+- experimenting with model reliability
+- portfolio building
+- structured decision support
 
 ---
 
-## Success Criteria\
+## Potential Future Users
+
+- people with high cognitive load
+- users struggling to organize decisions
+- professionals evaluating tradeoffs
+- users wanting structured AI outputs instead of free-form chat
+
+---
+
+# In Scope
+
+The following functionality is part of the project scope.
+
+---
+
+## AI Features
+
+- structured LLM outputs
+- prompt templates
+- multi-model support
+- fallback providers
+- retry logic
+- timeout handling
+- validation layer
+- lightweight evaluation/scoring
+
+---
+
+## Backend Features
+
+- FastAPI API
+- JSON request/response handling
+- runtime metadata
+- modular architecture
+- centralized configuration
+
+---
+
+## Frontend Features
+
+- Streamlit UI
+- browser interaction
+- structured rendering of outputs
+
+---
+
+## Persistence Features
+
+- JSONL session storage
+- local history retrieval
+- simple context injection
+
+---
+
+## Engineering Features
+
+- logging
+- metrics
+- model abstraction
+- modular codebase
+- deployment
+- environment configuration
+
+---
+
+# Out of Scope
+
+The following were intentionally excluded from MVP scope.
+
+---
+
+## Production Infrastructure
+
+- Kubernetes
+- distributed systems
+- enterprise scaling
+- load balancing
+- advanced monitoring systems
+
+---
+
+## Security and Enterprise Features
+
+- authentication
+- RBAC
+- multi-user accounts
+- billing systems
+- payment integration
+
+---
+
+## Advanced AI Features
+
+- vector databases
+- embeddings
+- semantic retrieval
+- autonomous agents
+- advanced orchestration frameworks
+- fine-tuning
+- local GPU inference
+
+---
+
+## Frontend Complexity
+
+- custom frontend frameworks
+- advanced frontend state management
+- mobile applications
+- polished production UI/UX
+
+---
+
+# Constraints
+
+## Time Constraints
+
+- developed part-time
+- iterative learning process
+- architecture evolved while learning
+
+---
+
+## Cost Constraints
+
+- minimal infrastructure costs
+- preference for free tiers
+- preference for lightweight deployment
+
+---
+
+## Technical Constraints
+
+- cloud hosting with ephemeral storage
+- provider rate limits
+- inconsistent LLM behavior
+- structured output reliability issues
+
+---
+
+# Success Criteria
 
 The project is considered successful if:
 
-- the tool reliably produces structured decision outputs
-- model outputs can be validated and parsed safely
-- the project demonstrates real AI engineering practices
-- the repository can serve as a portfolio example for AI-related roles
+- the system reliably returns structured outputs
+- malformed outputs are handled safely
+- retries/fallback improve stability
+- API and UI layers function correctly
+- the project demonstrates practical AI engineering patterns
+- the project can be used as portfolio evidence for AI-related roles
 
 ---
 
-## Guiding Principle
+# Non-Goals
 
-AI Model (you) used for guiding the user (me) should not ever give the solution for copy paste unless explicitly asked to do so.. Model is a project manager, user is product manager. Again model is development team lead and user is developer. Model should guide user on how to do some things, nudge in right direction, suggest documentation to read, suggest what needs to be done, lend a hand but never to carry the user.
+The project does NOT attempt to:
 
-Model should provide fake data that user can use to test his code in order to get solution. If user provides a wrong code model should output what that code will give and how it will break so user itself can figure it out.
+- compete with commercial AI assistants
+- solve general reasoning
+- provide enterprise-grade infrastructure
+- achieve perfect model accuracy
+- build advanced autonomous agents
 
-Model should reply as short and as friendly as possble and motivate user. User at any moment can require the solution but that is the last resort.
+The focus remains:
+
+- reliability
+- learning
+- modularity
+- practical implementation
+
+---
+
+# Architecture Direction
+
+The project intentionally prioritizes:
+
+- simple architecture
+- explainable systems
+- modularity
+- visibility into failures
+- iterative improvement
+- deployment realism
+
+over:
+
+- maximum scale
+- advanced distributed systems
+- premature optimization
+
+---
+
+# Key Engineering Themes
+
+Throughout development, the project focused heavily on:
+
+- structured outputs
+- validation-first AI workflows
+- model reliability
+- fallback handling
+- runtime visibility
+- prompt iteration
+- deployment troubleshooting
+- practical debugging
+
+---
+
+# Current Limitations
+
+Current limitations include:
+
+- ephemeral persistence on cloud hosting
+- no semantic retrieval
+- no authentication
+- no advanced rate limiting
+- synchronous execution only
+- limited production hardening
+
+These limitations were accepted intentionally to keep the project lightweight and focused on learning.
+
+---
+
+# Future Scope Possibilities
+
+Potential future improvements:
+
+- Firebase/database persistence
+- semantic retrieval
+- embeddings/vector search
+- local models
+- better evaluation framework
+- richer UI
+- notification systems
+- production-grade rate limiting
+
+These are considered future enhancements rather than MVP requirements.
+
+---
+
+# Guiding Principle
+
 The project prioritizes:
 
-**learning applied AI engineering while building a useful tool.**
+- learning by shipping
+- practical AI engineering
+- reliability over hype
+- explainable architecture
+- iterative improvement
+
+The system is intentionally simple, but built in a way that reflects real AI application engineering patterns.
