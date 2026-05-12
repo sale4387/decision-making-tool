@@ -8,8 +8,6 @@ logging.getLogger("httpcore").setLevel(logging.WARNING)
 logging.basicConfig(
     level=level,
     format="%(asctime)s | %(levelname)s | %(name)s | %(message)s",
-    filename="logger_file.log",
-    filemode="a",
     encoding="utf-8"
 )
 
