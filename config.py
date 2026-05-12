@@ -8,7 +8,7 @@ VERSION="v3 - UI and API"
 
 MODEL_MAP={
     "huggingface":"mistralai/Mistral-7B-Instruct-v0.2:featherless-ai",
-    "google":"gemini-3.1-flash-lite-preview"
+    "google":"gemini-3.1-flash-lite"
 }
 
 MAX_RETRIES = 3
